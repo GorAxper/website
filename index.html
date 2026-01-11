@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Milestone Journey</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+
+    <section id="login-screen" class="full-screen">
+        <div class="glass-panel login-card">
+            <h1 class="header-gradient">The Journey</h1>
+            <p>Access the curated archive of shared moments.</p>
+            <div class="input-group">
+                <input type="password" id="password-input" placeholder="Access Code" autocomplete="current-password">
+                <button id="login-button" onclick="checkPassword()">Unlock Archive</button>
+            </div>
+            <p id="error-msg" class="error-text"></p>
+        </div>
+    </section>
+
+    <main id="main-content" class="hidden">
+        <header class="page-header">
+            <h1 class="header-gradient" id="title">Milestone Collection</h1>
+            <div id="status-pill" class="status-pill">Synchronizing milestones...</div>
+        </header>
+
+        <div class="calendar-grid" id="calendar-grid">
+            </div>
+    </main>
+
+    <div id="content-modal" class="modal-overlay hidden" onclick="closeOnOutsideClick(event)">
+        <div class="modal-panel glass-panel">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modal-body">
+                </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
