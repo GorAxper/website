@@ -6,13 +6,14 @@
     <title>The Journey | Vancouver & Goris</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <!-- Particle Background -->
     <canvas id="particle-canvas"></canvas>
-    <!-- Weather Effects Layer -->
+    <!-- Weather Effects Overlay (For CSS particles if needed) -->
     <div id="weather-effect-overlay"></div>
 
     <!-- Top Navigation (Visible after login) -->
@@ -29,7 +30,7 @@
             <p>Access the curated archive of shared moments.</p>
             <div class="input-group">
                 <input type="password" id="password-input" placeholder="Access Code" autocomplete="current-password">
-                <button id="login-button" onclick="checkPassword()">Unlock Archive</button>
+                <button class="primary-btn" id="login-button" onclick="checkPassword()">Unlock Archive</button>
             </div>
             <p id="error-msg" class="error-text"></p>
         </div>
@@ -53,6 +54,12 @@
                         <h3>Vancouver, BC</h3>
                         <p class="country-label">Canada</p>
                     </div>
+                    
+                    <!-- Weather Video Animation -->
+                    <div class="weather-visual">
+                        <video id="vancouver-weather-video" muted loop playsinline src="Vancouver/clear.mp4"></video>
+                    </div>
+
                     <div class="weather-brief">
                         <span id="vancouver-temp">--°C</span>
                         <span id="vancouver-desc">Loading...</span>
@@ -67,6 +74,12 @@
                         <h3>Goris</h3>
                         <p class="country-label">Armenia</p>
                     </div>
+
+                    <!-- Weather Video Animation -->
+                    <div class="weather-visual">
+                        <video id="goris-weather-video" muted loop playsinline src="Goris/clear.mp4"></video>
+                    </div>
+
                     <div class="weather-brief">
                         <span id="goris-temp">--°C</span>
                         <span id="goris-desc">Loading...</span>
@@ -123,6 +136,7 @@
         </div>
     </div>
 
+    <!-- Logic Script -->
     <script src="script.js"></script>
 </body>
 </html>

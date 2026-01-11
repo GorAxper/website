@@ -123,10 +123,38 @@ async function fetchLiveWeather() {
 function updateWeatherUI(city, data) {
     const tempEl = document.getElementById(`${city}-temp`);
     const descEl = document.getElementById(`${city}-desc`);
-    const codeMap = { 0: "Clear Sky", 1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast", 45: "Foggy", 51: "Drizzle", 61: "Rainy", 71: "Snowy", 95: "Thunderstorm" };
+    const videoEl = document.getElementById(`${city}-weather-video`);
+    
+    const codeMap = { 
+        0: "Clear Sky", 1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast", 
+        45: "Foggy", 48: "Foggy", 
+        51: "Drizzle", 53: "Drizzle", 55: "Drizzle",
+        61: "Rainy", 63: "Rainy", 65: "Rainy",
+        71: "Snowy", 73: "Snowy", 75: "Snowy",
+        95: "Thunderstorm" 
+    };
     
     if (tempEl) tempEl.innerText = `${data.temperature}°C`;
     if (descEl) descEl.innerText = codeMap[data.weathercode] || "Clear";
+    
+    // Update Video Animation
+    if (videoEl) {
+        let weatherType = 'clear';
+        if (data.weathercode >= 1 && data.weathercode <= 3) weatherType = 'cloudy';
+        else if (data.weathercode >= 45 && data.weathercode <= 48) weatherType = 'fog';
+        else if (data.weathercode >= 51 && data.weathercode <= 65) weatherType = 'rain';
+        else if (data.weathercode >= 71 && data.weathercode <= 77) weatherType = 'snow';
+        else if (data.weathercode >= 95) weatherType = 'storm';
+
+        const folder = city === 'vancouver' ? 'dynamic/Vancouver' : 'dynamic/Goris';
+        const newSrc = `${folder}/${weatherType}.mp4`;
+        
+        if (videoEl.getAttribute('src') !== newSrc) {
+            videoEl.src = newSrc;
+            videoEl.load();
+            videoEl.play().catch(() => {});
+        }
+    }
     
     if (city === 'goris') applyWeatherEffect(data.weathercode);
 }

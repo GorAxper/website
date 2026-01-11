@@ -1,4 +1,4 @@
-/* --- THE JOURNEY: CSS STYLES --- */
+/* --- THE JOURNEY: MASTER STYLES --- */
 
 :root {
     --deep-navy: #051937;
@@ -110,24 +110,41 @@ h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: upper
 .location-info h3 { font-size: 2rem; font-weight: 900; }
 .country-label { font-size: 0.85rem; font-weight: 700; opacity: 0.5; text-transform: uppercase; letter-spacing: 1.5px; }
 
-.weather-brief { margin: 25px 0; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 600; }
+/* Weather Video Styling */
+.weather-visual {
+    width: 120px;
+    height: 120px;
+    margin: 20px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.weather-visual video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.weather-brief { margin: 15px 0; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 600; }
 #vancouver-temp, #goris-temp { font-size: 1.8rem; color: var(--terracotta); }
 #vancouver-desc, #goris-desc { text-transform: capitalize; opacity: 0.8; font-size: 1rem; }
 
 .big-time { font-family: 'JetBrains Mono', monospace; font-size: 3.8rem; font-weight: 700; margin: 15px 0; color: var(--deep-navy); }
 .big-date { font-size: 1.2rem; font-weight: 600; opacity: 0.6; }
 
-/* --- LOGIN (RESTORED ORIGINAL DESIGN) --- */
+/* --- LOGIN DESIGN --- */
 .login-card { padding: 4rem; text-align: center; max-width: 440px; width: 100%; border-top: 6px solid var(--terracotta); }
 .input-group { margin-top: 30px; display: flex; flex-direction: column; gap: 20px; }
 input { padding: 16px; border-radius: 12px; border: 1.5px solid #eee; text-align: center; font-size: 1rem; outline: none; transition: 0.3s; }
 input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 141, 94, 0.1); }
-button { background: var(--deep-navy); color: var(--white); border: none; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.4s; }
-button:hover { background: var(--terracotta); transform: translateY(-2px); }
+#login-button { background: var(--deep-navy); color: var(--white); border: none; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.4s; }
+#login-button:hover { background: var(--terracotta); transform: translateY(-2px); }
 
 .error-text { color: var(--terracotta); margin-top: 10px; font-weight: 600; font-size: 0.85rem; }
 
-/* --- MILESTONES & POLLS (RESTORED ORIGINAL DESIGN) --- */
+/* --- MILESTONES & POLLS DESIGN --- */
 .page-header { text-align: center; margin-bottom: 50px; }
 .status-pill { display: inline-block; background: var(--deep-navy); color: white; padding: 8px 24px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; margin-top: 10px; }
 
