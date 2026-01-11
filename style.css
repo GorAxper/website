@@ -30,6 +30,14 @@ body {
     background: radial-gradient(circle at center, #ffffff 0%, var(--cream-bg) 100%);
 }
 
+#weather-effect-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
 h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
 
 .header-gradient {
@@ -83,29 +91,43 @@ h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: upper
     color: white;
 }
 
-/* --- LOGIN --- */
+/* --- PAGE 1: CONNECTION DESIGN --- */
+.view-container { padding: 40px 20px; max-width: 1150px; margin: 0 auto; padding-top: 100px; }
+
+.distance-header { text-align: center; margin-bottom: 40px; }
+.distance-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 2px; color: var(--terracotta); opacity: 0.8; }
+#live-distance { font-family: 'JetBrains Mono', monospace; font-size: 2.8rem; margin: 10px 0; font-weight: 700; color: var(--deep-navy); }
+.distance-line { 
+    height: 2px; background: linear-gradient(90deg, transparent, var(--terracotta), transparent); 
+    width: 250px; margin: 20px auto; position: relative;
+}
+.distance-line span { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--cream-bg); padding: 0 15px; font-size: 1.4rem; }
+
+.clock-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 30px; }
+.clock-card { padding: 45px; text-align: center; transition: 0.4s; border-bottom: 6px solid var(--dusty-purple); }
+.clock-card:hover { transform: translateY(-5px); box-shadow: 0 20px 45px rgba(5, 25, 55, 0.12); }
+
+.location-info h3 { font-size: 2rem; font-weight: 900; }
+.country-label { font-size: 0.85rem; font-weight: 700; opacity: 0.5; text-transform: uppercase; letter-spacing: 1.5px; }
+
+.weather-brief { margin: 25px 0; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 600; }
+#vancouver-temp, #goris-temp { font-size: 1.8rem; color: var(--terracotta); }
+#vancouver-desc, #goris-desc { text-transform: capitalize; opacity: 0.8; font-size: 1rem; }
+
+.big-time { font-family: 'JetBrains Mono', monospace; font-size: 3.8rem; font-weight: 700; margin: 15px 0; color: var(--deep-navy); }
+.big-date { font-size: 1.2rem; font-weight: 600; opacity: 0.6; }
+
+/* --- LOGIN (RESTORED ORIGINAL DESIGN) --- */
 .login-card { padding: 4rem; text-align: center; max-width: 440px; width: 100%; border-top: 6px solid var(--terracotta); }
 .input-group { margin-top: 30px; display: flex; flex-direction: column; gap: 20px; }
 input { padding: 16px; border-radius: 12px; border: 1.5px solid #eee; text-align: center; font-size: 1rem; outline: none; transition: 0.3s; }
 input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 141, 94, 0.1); }
-
-.primary-btn {
-    background: var(--deep-navy);
-    color: var(--white);
-    border: none;
-    padding: 16px;
-    border-radius: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: 0.4s;
-}
-.primary-btn:hover { background: var(--terracotta); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(241, 141, 94, 0.2); }
+button { background: var(--deep-navy); color: var(--white); border: none; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.4s; }
+button:hover { background: var(--terracotta); transform: translateY(-2px); }
 
 .error-text { color: var(--terracotta); margin-top: 10px; font-weight: 600; font-size: 0.85rem; }
 
-/* --- MAIN LAYOUT --- */
-#main-content { max-width: 1150px; margin: 0 auto; padding: 100px 20px 45px 20px; }
+/* --- MILESTONES & POLLS (RESTORED ORIGINAL DESIGN) --- */
 .page-header { text-align: center; margin-bottom: 50px; }
 .status-pill { display: inline-block; background: var(--deep-navy); color: white; padding: 8px 24px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; margin-top: 10px; }
 
@@ -115,7 +137,6 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
     gap: 20px;
 }
 
-/* --- CARDS (BOX & POLL) --- */
 .box {
     aspect-ratio: 1 / 1;
     display: flex;
@@ -128,10 +149,7 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
-    animation: boxFadeIn 0.6s ease-out both;
 }
-
-@keyframes boxFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
 .box.locked { opacity: 0.5; cursor: not-allowed; }
 .box.available { border: 1.5px solid var(--peach); cursor: pointer; }
@@ -239,7 +257,11 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
 .available .lock-icon { fill: var(--terracotta); }
 .date-label { font-size: 0.75rem; font-weight: 700; opacity: 0.7; }
 
-/* --- MODAL --- */
+/* --- WEATHER OVERLAYS --- */
+.rain-drop { position: absolute; background: rgba(174, 194, 224, 0.6); width: 2px; height: 15px; pointer-events: none; }
+.snowflake { position: absolute; color: white; font-size: 1rem; pointer-events: none; }
+@keyframes fall { to { transform: translateY(100vh); } }
+
 .modal-overlay { position: fixed; inset: 0; background: rgba(5, 25, 55, 0.6); display: flex; justify-content: center; align-items: center; z-index: 3000; padding: 20px; backdrop-filter: blur(4px); }
 .modal-panel { max-width: 500px; width: 100%; padding: 50px; text-align: center; position: relative; border-bottom: 5px solid var(--dusty-purple); }
 .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; cursor: pointer; color: var(--deep-navy); transition: 0.2s; }
@@ -247,6 +269,6 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
 
 @media (max-width: 600px) {
     #nav-bar { width: 90%; justify-content: center; }
-    .login-card { padding: 2.5rem 1.5rem; }
-    #music-container { bottom: 15px; right: 15px; width: 260px; }
+    .clock-grid { grid-template-columns: 1fr; }
+    .big-time { font-size: 2.8rem; }
 }

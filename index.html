@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Journey | Archive & Debate</title>
+    <title>The Journey | Vancouver & Goris</title>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700;900&display=swap" rel="stylesheet">
-    <!-- Stylesheet -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <!-- Particle Background -->
     <canvas id="particle-canvas"></canvas>
+    <!-- Weather Effects Layer -->
+    <div id="weather-effect-overlay"></div>
 
     <!-- Top Navigation (Visible after login) -->
     <nav id="nav-bar" class="hidden">
-        <button class="nav-btn active" id="nav-milestones" onclick="showView('milestones')">Archives</button>
+        <button class="nav-btn active" id="nav-home" onclick="showView('home')">Connection</button>
+        <button class="nav-btn" id="nav-milestones" onclick="showView('milestones')">Archives</button>
         <button class="nav-btn" id="nav-polls" onclick="showView('polls')">Great Debate</button>
     </nav>
 
@@ -27,7 +29,7 @@
             <p>Access the curated archive of shared moments.</p>
             <div class="input-group">
                 <input type="password" id="password-input" placeholder="Access Code" autocomplete="current-password">
-                <button class="primary-btn" id="login-button" onclick="checkPassword()">Unlock Archive</button>
+                <button id="login-button" onclick="checkPassword()">Unlock Archive</button>
             </div>
             <p id="error-msg" class="error-text"></p>
         </div>
@@ -36,17 +38,56 @@
     <!-- Main Content -->
     <main id="main-content" class="hidden">
         
-        <!-- View: Milestones (Archives) -->
-        <div id="milestones-view">
+        <!-- PAGE 1: CONNECTION (HOME) -->
+        <div id="home-view" class="view-container">
+            <div class="distance-header">
+                <p class="distance-label">LIVE DISTANCE</p>
+                <h2 id="live-distance">Calculating...</h2>
+                <div class="distance-line"><span>✈</span></div>
+            </div>
+
+            <div class="clock-grid">
+                <!-- Vancouver Card -->
+                <div class="glass-panel clock-card" id="vancouver-card">
+                    <div class="location-info">
+                        <h3>Vancouver, BC</h3>
+                        <p class="country-label">Canada</p>
+                    </div>
+                    <div class="weather-brief">
+                        <span id="vancouver-temp">--°C</span>
+                        <span id="vancouver-desc">Loading...</span>
+                    </div>
+                    <div class="big-time" id="vancouver-time">00:00:00</div>
+                    <div class="big-date" id="vancouver-date">Date</div>
+                </div>
+
+                <!-- Goris Card -->
+                <div class="glass-panel clock-card" id="goris-card">
+                    <div class="location-info">
+                        <h3>Goris</h3>
+                        <p class="country-label">Armenia</p>
+                    </div>
+                    <div class="weather-brief">
+                        <span id="goris-temp">--°C</span>
+                        <span id="goris-desc">Loading...</span>
+                    </div>
+                    <div class="big-time" id="goris-time">00:00:00</div>
+                    <div class="big-date" id="goris-date">Date</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: MILESTONES (ARCHIVE) -->
+        <div id="milestones-view" class="view-container hidden">
             <header class="page-header">
                 <h1 class="header-gradient">Milestone Collection</h1>
-                <div id="status-pill" class="status-pill">Synchronizing...</div>
+                <div id="status-pill" class="status-pill">Synchronizing milestones...</div>
             </header>
             <div class="calendar-grid" id="calendar-grid"></div>
         </div>
 
-        <!-- View: Polls (Great Debate) -->
-        <div id="polls-view" class="hidden">
+        <!-- PAGE 3: POLLS (GREAT DEBATE) -->
+        <div id="polls-view" class="view-container hidden">
             <header class="page-header">
                 <h1 class="header-gradient">The Great Debate</h1>
                 <p>Settling the most important questions of our time.</p>
@@ -82,7 +123,6 @@
         </div>
     </div>
 
-    <!-- Logic Script -->
     <script src="script.js"></script>
 </body>
 </html>

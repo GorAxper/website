@@ -1,18 +1,18 @@
 /* --- THE JOURNEY: LOGIC ENGINE --- */
 
-// 1. MUSIC PLAYLIST 
-// Update this list to add or remove music. 
-// Files should be in a folder named 'music' relative to index.html.
+// 1. CONFIGURATION
+const ACCESS_PASSWORD = "2026"; 
+const VANCOUVER_COORDS = { lat: 49.2827, lon: -123.1207 };
+const GORIS_COORDS = { lat: 39.5074, lon: 46.3317 };
+
+const START_DATE = new Date(2025, 9, 1); 
+const END_DATE = new Date(2026, 11, 31); 
+const INTERVAL_DAYS = 15;
+
 const PLAYLIST = [
     { title: "Jamiroquai - Tallulah", src: "music/tallulah.mp3" },
     { title: "Neneh Cherry, Youssou N'Dour - 7 seconds away", src: "music/seven_seconds.mp3" },
 ];
-
-// 2. CONFIGURATION
-const ACCESS_PASSWORD = "2026"; 
-const START_DATE = new Date(2025, 9, 1); // October 1st, 2025
-const END_DATE = new Date(2026, 11, 31); // December 31st, 2026
-const INTERVAL_DAYS = 15;
 
 const POLLS = [
     { q: "Pineapple on pizza: Yes or No?", options: ["Yes, heavenly!", "No, it's a crime!"] },
@@ -25,7 +25,7 @@ const POLLS = [
 const LOCKED_SVG = `<svg class="lock-icon" viewBox="0 0 24 24"><path d="M12 2C9.243 2 7 4.243 7 7v3H6c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-8c0-1.103-.897-2-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm9 13H6v-8h12v8z"/></svg>`;
 const UNLOCKED_SVG = `<svg class="lock-icon" viewBox="0 0 24 24"><path d="M12 2C9.243 2 7 4.243 7 7v3H6c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-8c0-1.103-.897-2-2-2h-7V7c0-1.654 1.346-3 3-3s3 1.346 3 3v1h2V7c0-2.757-2.243-5-5-5zM6 12h12v8H6v-8z"/></svg>`;
 
-// 3. AUTHENTICATION
+// 2. AUTHENTICATION
 function checkPassword() {
     const input = document.getElementById('password-input').value;
     if (input === ACCESS_PASSWORD) {
@@ -36,48 +36,130 @@ function checkPassword() {
         const musicContainer = document.getElementById('music-container');
         if (musicContainer) {
             musicContainer.classList.remove('hidden');
-            // Ensure the window is open (unfolded) by default
             musicContainer.classList.remove('folded');
             const foldIcon = document.getElementById('fold-icon');
             if (foldIcon) foldIcon.innerText = "🎶";
         }
 
+        initHomeView();
         generateGrid();
         setupMusic();
-        
-        // Start playing music automatically after the user interaction (click)
-        togglePlay();
+        togglePlay(); 
     } else {
         const error = document.getElementById('error-msg');
-        error.innerText = "Incorrect Code. Access Denied.";
+        error.innerText = "Incorrect Code.";
         setTimeout(() => error.innerText = "", 3000);
     }
 }
 
-// 4. NAVIGATION
+// 3. NAVIGATION (3-Page Management)
 function showView(view) {
-    const milestones = document.getElementById('milestones-view');
-    const polls = document.getElementById('polls-view');
-    const btnM = document.getElementById('nav-milestones');
-    const btnP = document.getElementById('nav-polls');
+    const views = ['home', 'milestones', 'polls'];
+    views.forEach(v => {
+        const viewEl = document.getElementById(`${v}-view`);
+        if (viewEl) viewEl.classList.add('hidden');
+        
+        const navBtn = document.getElementById(`nav-${v === 'home' ? 'home' : v}`);
+        if (navBtn) navBtn.classList.remove('active');
+    });
 
-    if (view === 'milestones') {
-        milestones.classList.remove('hidden');
-        polls.classList.add('hidden');
-        btnM.classList.add('active');
-        btnP.classList.remove('active');
-    } else {
-        milestones.classList.add('hidden');
-        polls.classList.remove('hidden');
-        btnP.classList.add('active');
-        btnM.classList.remove('active');
-        renderPolls();
+    document.getElementById(`${view}-view`).classList.remove('hidden');
+    document.getElementById(`nav-${view === 'home' ? 'home' : view}`).classList.add('active');
+
+    if (view === 'polls') renderPolls();
+    if (view === 'milestones') generateGrid();
+    if (view === 'home') updateWeatherAndClocks();
+}
+
+// 4. PAGE 1 LOGIC: LIVE CONNECTION
+function initHomeView() {
+    updateWeatherAndClocks();
+    calculateLiveDistance();
+    setInterval(updateWeatherAndClocks, 1000); 
+    setInterval(fetchLiveWeather, 600000); 
+    fetchLiveWeather();
+}
+
+function calculateLiveDistance() {
+    const R = 6371; 
+    const dLat = (GORIS_COORDS.lat - VANCOUVER_COORDS.lat) * Math.PI / 180;
+    const dLon = (GORIS_COORDS.lon - VANCOUVER_COORDS.lon) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(VANCOUVER_COORDS.lat * Math.PI / 180) * Math.cos(GORIS_COORDS.lat * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const d = R * c; 
+    const distEl = document.getElementById('live-distance');
+    if (distEl) distEl.innerText = `${d.toLocaleString(undefined, {maximumFractionDigits: 2})} KM`;
+}
+
+function updateWeatherAndClocks() {
+    const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+    const optionsDate = { weekday: 'long', month: 'long', day: 'numeric' };
+
+    const vanTimeEl = document.getElementById('vancouver-time');
+    const vanDateEl = document.getElementById('vancouver-date');
+    if (vanTimeEl) vanTimeEl.innerText = new Intl.DateTimeFormat('en-US', { ...optionsTime, timeZone: 'America/Vancouver' }).format(new Date());
+    if (vanDateEl) vanDateEl.innerText = new Intl.DateTimeFormat('en-US', { ...optionsDate, timeZone: 'America/Vancouver' }).format(new Date());
+
+    const gorTimeEl = document.getElementById('goris-time');
+    const gorDateEl = document.getElementById('goris-date');
+    if (gorTimeEl) gorTimeEl.innerText = new Intl.DateTimeFormat('en-US', { ...optionsTime, timeZone: 'Asia/Yerevan' }).format(new Date());
+    if (gorDateEl) gorDateEl.innerText = new Intl.DateTimeFormat('en-US', { ...optionsDate, timeZone: 'Asia/Yerevan' }).format(new Date());
+}
+
+async function fetchLiveWeather() {
+    try {
+        const vanRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${VANCOUVER_COORDS.lat}&longitude=${VANCOUVER_COORDS.lon}&current_weather=true`);
+        const gorRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${GORIS_COORDS.lat}&longitude=${GORIS_COORDS.lon}&current_weather=true`);
+        
+        const vanData = await vanRes.json();
+        const gorData = await gorRes.json();
+
+        updateWeatherUI('vancouver', vanData.current_weather);
+        updateWeatherUI('goris', gorData.current_weather);
+    } catch (e) { console.error("Weather failed", e); }
+}
+
+function updateWeatherUI(city, data) {
+    const tempEl = document.getElementById(`${city}-temp`);
+    const descEl = document.getElementById(`${city}-desc`);
+    const codeMap = { 0: "Clear Sky", 1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast", 45: "Foggy", 51: "Drizzle", 61: "Rainy", 71: "Snowy", 95: "Thunderstorm" };
+    
+    if (tempEl) tempEl.innerText = `${data.temperature}°C`;
+    if (descEl) descEl.innerText = codeMap[data.weathercode] || "Clear";
+    
+    if (city === 'goris') applyWeatherEffect(data.weathercode);
+}
+
+function applyWeatherEffect(code) {
+    const overlay = document.getElementById('weather-effect-overlay');
+    if (!overlay) return;
+    overlay.innerHTML = '';
+    
+    if (code >= 61 && code <= 65) { 
+        for(let i=0; i<50; i++) {
+            const drop = document.createElement('div');
+            drop.className = 'rain-drop';
+            drop.style.left = Math.random() * 100 + 'vw';
+            drop.style.animation = `fall ${Math.random() + 0.5}s linear infinite`;
+            overlay.appendChild(drop);
+        }
+    } else if (code >= 71 && code <= 77) {
+        for(let i=0; i<30; i++) {
+            const flake = document.createElement('div');
+            flake.className = 'snowflake';
+            flake.innerText = '❄';
+            flake.style.left = Math.random() * 100 + 'vw';
+            flake.style.animation = `fall ${Math.random() * 3 + 2}s linear infinite`;
+            overlay.appendChild(flake);
+        }
     }
 }
 
-// 5. GRID GENERATION (Archives)
+// 5. PAGE 2 LOGIC: ARCHIVES
 function generateGrid() {
     const grid = document.getElementById('calendar-grid');
+    if (!grid) return;
     const today = new Date(); 
     let current = new Date(START_DATE);
     let unlockedCount = 0;
@@ -103,157 +185,103 @@ function generateGrid() {
         grid.appendChild(box);
         current.setDate(current.getDate() + INTERVAL_DAYS); 
     }
-    document.getElementById('status-pill').innerText = `${unlockedCount} / ${totalCount} Milestones Unlocked`;
+    const statusPill = document.getElementById('status-pill');
+    if (statusPill) statusPill.innerText = `${unlockedCount} / ${totalCount} Milestones Unlocked`;
 }
 
-// 6. POLL LOGIC (Great Debate)
+// 6. PAGE 3 LOGIC: THE GREAT DEBATE
 function renderPolls() {
     const grid = document.getElementById('polls-grid');
     if (!grid) return;
     grid.innerHTML = "";
-    POLLS.forEach((poll, i) => {
+    POLLS.forEach((p, i) => {
         const card = document.createElement('div');
         card.className = "box poll-card available";
         card.style.animationDelay = `${i * 0.1}s`;
         card.innerHTML = `
-            <div class="poll-question">${poll.q}</div>
+            <div class="poll-question">${p.q}</div>
             <div style="width: 100%;">
-                ${poll.options.map(opt => `<button class="poll-btn" onclick="vote('${opt}')">${opt}</button>`).join('')}
+                ${p.options.map(opt => `<button class="poll-btn" onclick="vote('${opt}')">${opt}</button>`).join('')}
             </div>
         `;
         grid.appendChild(card);
     });
 }
 
-function vote(choice) {
-    alert(`Choice recorded: "${choice}". Great talking point for the next conversation!`);
-}
+function vote(c) { alert(`Vote recorded: ${c}`); }
 
-// 7. MUSIC PLAYER LOGIC
+// 7. MUSIC PLAYER & SHARED HELPERS
 let trackIdx = 0;
 const audio = document.getElementById('audio-element');
 const playBtn = document.getElementById('play-btn');
 
 function setupMusic() {
-    if (PLAYLIST.length === 0 || !audio) return;
+    if (!audio) return;
     updateTrackInfo();
     audio.onended = () => changeTrack(1);
 }
-
 function updateTrackInfo() {
-    const track = PLAYLIST[trackIdx];
     const trackNameEl = document.getElementById('current-track-name');
-    if (trackNameEl) trackNameEl.innerText = track.title;
-    if (audio) audio.src = track.src;
+    if (trackNameEl) trackNameEl.innerText = PLAYLIST[trackIdx].title;
+    if (audio) audio.src = PLAYLIST[trackIdx].src;
 }
-
 function togglePlay() {
     if (!audio) return;
-    if (audio.paused) {
-        audio.play().catch(e => console.log("User interaction required for audio."));
-        if (playBtn) playBtn.innerText = "⏸";
-    } else {
-        audio.pause();
-        if (playBtn) playBtn.innerText = "▶";
-    }
+    if (audio.paused) { audio.play().catch(e => {}); if (playBtn) playBtn.innerText = "⏸"; }
+    else { audio.pause(); if (playBtn) playBtn.innerText = "▶"; }
 }
-
-function changeTrack(dir) {
-    trackIdx = (trackIdx + dir + PLAYLIST.length) % PLAYLIST.length;
-    updateTrackInfo();
-    if (audio) {
-        audio.play().catch(e => console.log("Audio switched, click play."));
-        if (playBtn) playBtn.innerText = "⏸";
-    }
+function changeTrack(d) {
+    trackIdx = (trackIdx + d + PLAYLIST.length) % PLAYLIST.length;
+    updateTrackInfo(); 
+    if (audio) { audio.play().catch(() => {}); if (playBtn) playBtn.innerText = "⏸"; }
 }
-
-function toggleMusicFold() {
-    const player = document.getElementById('music-container');
-    const foldIcon = document.getElementById('fold-icon');
-    if (player) {
-        player.classList.toggle('folded');
-        if (foldIcon) foldIcon.innerText = player.classList.contains('folded') ? "🎵" : "🎶";
-    }
+function toggleMusicFold() { 
+    const container = document.getElementById('music-container');
+    if (container) container.classList.toggle('folded'); 
 }
+function suggestMusic() { const l = prompt("Enter suggestion:"); if (l) alert("Success!"); }
 
-function suggestMusic() {
-    const link = prompt("Enter a song name or a YouTube/Spotify link you'd like to suggest:");
-    if (link) alert("Success! Your suggestion has been added to the review queue.");
-}
-
-// 8. MODAL HELPERS
-function openModal(date) {
+function openModal(d) {
+    const modalBody = document.getElementById('modal-body');
     const modal = document.getElementById('content-modal');
-    const body = document.getElementById('modal-body');
-    if (modal && body) {
-        body.innerHTML = `
-            <h2 style="color:var(--deep-navy);">${date}</h2>
-            <div style="width:40px; height:3px; background:var(--terracotta); margin:15px auto;"></div>
-            <p style="line-height:1.6;">The archive for this milestone is now open. Here you can revisit all shared memories from this period.</p>
-            <p style="margin-top:20px; font-weight: 700; color: var(--terracotta);">COLLECTION ACCESSED 🔓</p>
-        `;
+    if (modal && modalBody) {
+        modalBody.innerHTML = `<h2>${d}</h2><p>Archive opened 🔓</p>`;
         modal.classList.remove('hidden');
     }
 }
-
 function closeModal() { 
     const modal = document.getElementById('content-modal');
     if (modal) modal.classList.add('hidden'); 
 }
+function closeOnOutsideClick(e) { if (e.target.classList.contains('modal-overlay')) closeModal(); }
 
-function closeOnOutsideClick(e) { 
-    if (e.target.classList.contains('modal-overlay')) closeModal(); 
-}
-
-// 9. PARTICLE ENGINE
+// 8. PARTICLE ENGINE
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas ? canvas.getContext('2d') : null;
 let particles = [];
-
 function initParticles() {
     if (!canvas || !ctx) return;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
     particles = [];
-    const colors = ['#f18d5e', '#b06085', '#051937', '#ffcc99'];
     for (let i = 0; i < 60; i++) {
-        particles.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 3 + 1,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            dx: (Math.random() - 0.5) * 0.4,
-            dy: (Math.random() - 0.5) * 0.4,
-            opacity: Math.random() * 0.2 + 0.03
-        });
+        particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*3+1, dx: (Math.random()-0.5)*0.4, dy: (Math.random()-0.5)*0.4, opacity: Math.random()*0.2+0.03 });
     }
 }
-
 function animateParticles() {
     if (!canvas || !ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
     particles.forEach(p => {
-        ctx.globalAlpha = p.opacity;
-        ctx.fillStyle = p.color;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = p.opacity; ctx.fillStyle = '#f18d5e'; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
         p.x += p.dx; p.y += p.dy;
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
+        if (p.x<0) p.x=canvas.width; if (p.x>canvas.width) p.x=0; if (p.y<0) p.y=canvas.height; if (p.y>canvas.height) p.y=0;
     });
     requestAnimationFrame(animateParticles);
 }
 
-// Global Listeners
 const passwordInput = document.getElementById('password-input');
 if (passwordInput) {
-    passwordInput.addEventListener('keypress', (e) => { 
-        if (e.key === 'Enter') checkPassword(); 
-    });
+    passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPassword(); });
 }
 
-// Initialization
-initParticles();
-animateParticles();
+initParticles(); animateParticles();
 window.onresize = initParticles;
