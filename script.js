@@ -269,10 +269,10 @@ function renderPolls() {
     plusCard.style.display = "flex";
     plusCard.style.justifyContent = "center";
     plusCard.style.alignItems = "center";
-    // Fix: Remove aspect-ratio and set height to 100% to match row height
+    // Fixed Uniform Height
     plusCard.style.aspectRatio = "auto";
     plusCard.style.height = "100%";
-    plusCard.style.minHeight = "240px"; // Ensure it feels substantial even when empty
+    plusCard.style.minHeight = "340px"; 
     plusCard.innerHTML = "<span>+</span>";
     plusCard.onclick = openPollCreator;
     aniGrid.appendChild(plusCard);
@@ -284,16 +284,17 @@ function createPollCard(p, id, delay) {
     card.style.display = "flex";
     card.style.flexDirection = "column";
     card.style.animationDelay = `${delay}s`;
-    card.style.height = "100%"; // Ensure card fills grid height
-    card.style.aspectRatio = "auto"; // Override fixed aspect ratio for varying content
+    
+    // Consistent Fixed Card Length
+    card.style.height = "100%"; 
+    card.style.minHeight = "300px"; 
+    card.style.aspectRatio = "auto"; 
     
     const existingVote = USER_VOTES[id];
     
-    // Fix: Add a min-height and flex-center to the question area
-    let pollHTML = `<div class="poll-question" style="flex: 0 0 auto; margin-bottom: 20px; min-height: 56px; display: flex; align-items: center; justify-content: center; text-align: center;">${p.q}</div>`;
+    let pollHTML = `<div class="poll-question" style="flex: 0 0 auto; margin-bottom: 20px; min-height: 56px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 700;">${p.q}</div>`;
     
     if (existingVote) {
-        // Fix: Use justify-content: center to keep the choice message balanced in the middle of the bodyspace
         pollHTML += `
             <div style="margin-top: auto; flex: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; text-align: center;">
                 <div style="background: var(--cream-bg); padding: 15px; border-radius: 12px; border: 1px dashed var(--terracotta); margin-bottom: 15px;">
@@ -304,10 +305,16 @@ function createPollCard(p, id, delay) {
             </div>
         `;
     } else {
-        // Fix: Use justify-content: center and gap to spread buttons evenly in the middle-bottom
+        // Dynamic Button Length based on number of options
+        const count = p.options.length;
+        let padding = "12px"; // Default
+        if (count === 4) padding = "10px";
+        if (count === 3) padding = "16px";
+        if (count === 2) padding = "24px";
+
         pollHTML += `
             <div style="margin-top: auto; flex: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; gap: 10px;">
-                ${p.options.map(opt => `<button class="poll-btn" onclick="vote('${id}', '${opt}')" style="width: 100%; margin: 0; padding: 12px;">${opt}</button>`).join('')}
+                ${p.options.map(opt => `<button class="poll-btn" onclick="vote('${id}', '${opt}')" style="width: 100%; margin: 0; padding: ${padding}; font-weight: 600;">${opt}</button>`).join('')}
             </div>
         `;
     }
