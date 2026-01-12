@@ -13,7 +13,7 @@
 
     <!-- Particle Background -->
     <canvas id="particle-canvas"></canvas>
-    <!-- Weather Effects Overlay (For CSS particles if needed) -->
+    <!-- Weather Effects Overlay -->
     <div id="weather-effect-overlay"></div>
 
     <!-- Top Navigation (Visible after login) -->
@@ -123,6 +123,14 @@
                 <button id="play-btn" onclick="togglePlay()">▶</button>
                 <button onclick="changeTrack(1)">⏭</button>
             </div>
+            
+            <!-- Volume Adjuster -->
+            <div class="volume-container">
+                <span>🔈</span>
+                <input type="range" id="volume-control" min="0" max="1" step="0.01" value="0.5">
+                <span>🔊</span>
+            </div>
+
             <button class="suggest-music-btn" onclick="suggestMusic()">Suggest Music</button>
         </div>
         <audio id="audio-element"></audio>

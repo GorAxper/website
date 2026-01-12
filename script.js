@@ -52,7 +52,7 @@ function checkPassword() {
     }
 }
 
-// 3. NAVIGATION (3-Page Management)
+// 3. NAVIGATION
 function showView(view) {
     const views = ['home', 'milestones', 'polls'];
     views.forEach(v => {
@@ -137,7 +137,6 @@ function updateWeatherUI(city, data) {
     if (tempEl) tempEl.innerText = `${data.temperature}°C`;
     if (descEl) descEl.innerText = codeMap[data.weathercode] || "Clear";
     
-    // Update Video Animation
     if (videoEl) {
         let weatherType = 'clear';
         if (data.weathercode >= 1 && data.weathercode <= 3) weatherType = 'cloudy';
@@ -238,35 +237,61 @@ function renderPolls() {
 
 function vote(c) { alert(`Vote recorded: ${c}`); }
 
-// 7. MUSIC PLAYER & SHARED HELPERS
+// 7. MUSIC PLAYER
 let trackIdx = 0;
 const audio = document.getElementById('audio-element');
 const playBtn = document.getElementById('play-btn');
+const volumeControl = document.getElementById('volume-control');
 
 function setupMusic() {
     if (!audio) return;
+    
+    // Set default volume to 50%
+    audio.volume = 0.5;
+    if (volumeControl) volumeControl.value = 0.5;
+
     updateTrackInfo();
     audio.onended = () => changeTrack(1);
+
+    // Volume Listener
+    if (volumeControl) {
+        volumeControl.addEventListener('input', (e) => {
+            audio.volume = e.target.value;
+        });
+    }
 }
+
 function updateTrackInfo() {
     const trackNameEl = document.getElementById('current-track-name');
     if (trackNameEl) trackNameEl.innerText = PLAYLIST[trackIdx].title;
     if (audio) audio.src = PLAYLIST[trackIdx].src;
 }
+
 function togglePlay() {
     if (!audio) return;
-    if (audio.paused) { audio.play().catch(e => {}); if (playBtn) playBtn.innerText = "⏸"; }
-    else { audio.pause(); if (playBtn) playBtn.innerText = "▶"; }
+    if (audio.paused) { 
+        audio.play().catch(e => {}); 
+        if (playBtn) playBtn.innerText = "⏸"; 
+    } else { 
+        audio.pause(); 
+        if (playBtn) playBtn.innerText = "▶"; 
+    }
 }
+
 function changeTrack(d) {
     trackIdx = (trackIdx + d + PLAYLIST.length) % PLAYLIST.length;
     updateTrackInfo(); 
-    if (audio) { audio.play().catch(() => {}); if (playBtn) playBtn.innerText = "⏸"; }
+    if (audio) { 
+        audio.play().catch(() => {}); 
+        if (playBtn) playBtn.innerText = "⏸"; 
+    }
 }
+
 function toggleMusicFold() { 
     const container = document.getElementById('music-container');
     if (container) container.classList.toggle('folded'); 
 }
+
 function suggestMusic() { const l = prompt("Enter suggestion:"); if (l) alert("Success!"); }
 
 function openModal(d) {
@@ -277,10 +302,12 @@ function openModal(d) {
         modal.classList.remove('hidden');
     }
 }
+
 function closeModal() { 
     const modal = document.getElementById('content-modal');
     if (modal) modal.classList.add('hidden'); 
 }
+
 function closeOnOutsideClick(e) { if (e.target.classList.contains('modal-overlay')) closeModal(); }
 
 // 8. PARTICLE ENGINE
