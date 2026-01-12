@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Journey | Vancouver & Goris</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Particle Background -->
+    <canvas id="particle-canvas"></canvas>
+    <!-- Weather Effects Overlay -->
+    <div id="weather-effect-overlay"></div>
+
+    <!-- Top Navigation (Visible after login) -->
+    <nav id="nav-bar" class="hidden">
+        <button class="nav-btn active" id="nav-home" onclick="showView('home')">Connection</button>
+        <button class="nav-btn" id="nav-milestones" onclick="showView('milestones')">Archives</button>
+        <button class="nav-btn" id="nav-polls" onclick="showView('polls')">Great Debate</button>
+    </nav>
+
+    <!-- Login Screen -->
+    <section id="login-screen" class="full-screen">
+        <div class="glass-panel login-card">
+            <h1 class="header-gradient">The Journey</h1>
+            <p>Access the curated archive of shared moments.</p>
+            <div class="input-group">
+                <input type="password" id="password-input" placeholder="Access Code" autocomplete="current-password">
+                <button class="primary-btn" id="login-button" onclick="checkPassword()">Unlock Archive</button>
+            </div>
+            <p id="error-msg" class="error-text"></p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main id="main-content" class="hidden">
+        
+        <!-- PAGE 1: CONNECTION (HOME) -->
+        <div id="home-view" class="view-container">
+            <div class="distance-header">
+                <p class="distance-label">LIVE DISTANCE</p>
+                <h2 id="live-distance">Calculating...</h2>
+                <div class="distance-line"><span>✈</span></div>
+            </div>
+
+            <div class="clock-grid">
+                <!-- Vancouver Card -->
+                <div class="glass-panel clock-card" id="vancouver-card">
+                    <div class="location-info">
+                        <h3>Vancouver, BC</h3>
+                        <p class="country-label">Canada</p>
+                    </div>
+                    
+                    <!-- Weather Video Animation -->
+                    <div class="weather-visual">
+                        <video id="vancouver-weather-video" muted loop playsinline src="Vancouver/clear.mp4"></video>
+                    </div>
+
+                    <div class="weather-brief">
+                        <span id="vancouver-temp">--°C</span>
+                        <span id="vancouver-desc">Loading...</span>
+                    </div>
+                    <div class="big-time" id="vancouver-time">00:00:00</div>
+                    <div class="big-date" id="vancouver-date">Date</div>
+                </div>
+
+                <!-- Goris Card -->
+                <div class="glass-panel clock-card" id="goris-card">
+                    <div class="location-info">
+                        <h3>Goris</h3>
+                        <p class="country-label">Armenia</p>
+                    </div>
+
+                    <!-- Weather Video Animation -->
+                    <div class="weather-visual">
+                        <video id="goris-weather-video" muted loop playsinline src="Goris/clear.mp4"></video>
+                    </div>
+
+                    <div class="weather-brief">
+                        <span id="goris-temp">--°C</span>
+                        <span id="goris-desc">Loading...</span>
+                    </div>
+                    <div class="big-time" id="goris-time">00:00:00</div>
+                    <div class="big-date" id="goris-date">Date</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: MILESTONES (ARCHIVE) -->
+        <div id="milestones-view" class="view-container hidden">
+            <header class="page-header">
+                <h1 class="header-gradient">Milestone Collection</h1>
+                <div id="status-pill" class="status-pill">Synchronizing milestones...</div>
+            </header>
+            <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+
+        <!-- PAGE 3: POLLS (GREAT DEBATE) -->
+        <div id="polls-view" class="view-container hidden">
+            <header class="page-header">
+                <h1 class="header-gradient">The Great Debate</h1>
+                <p>Settling the most important questions of our time.</p>
+            </header>
+            <div class="calendar-grid" id="polls-grid"></div>
+        </div>
+
+    </main>
+
+    <!-- Foldable Music Player -->
+    <div id="music-container" class="glass-panel hidden folded">
+        <div class="music-header" onclick="toggleMusicFold()">
+            <span id="fold-icon">🎵</span>
+            <span class="track-title" id="current-track-name">No track playing</span>
+            <span class="fold-toggle-hint">⇅</span>
+        </div>
+        <div class="music-body">
+            <div class="music-controls">
+                <button onclick="changeTrack(-1)">⏮</button>
+                <button id="play-btn" onclick="togglePlay()">▶</button>
+                <button onclick="changeTrack(1)">⏭</button>
+            </div>
+            
+            <!-- Volume Adjuster -->
+            <div class="volume-container">
+                <span>🔈</span>
+                <input type="range" id="volume-control" min="0" max="1" step="0.01" value="0.5">
+                <span>🔊</span>
+            </div>
+
+            <button class="suggest-music-btn" onclick="suggestMusic()">Suggest Music</button>
+        </div>
+        <audio id="audio-element"></audio>
+    </div>
+
+    <!-- Content Modal -->
+    <div id="content-modal" class="modal-overlay hidden" onclick="closeOnOutsideClick(event)">
+        <div class="modal-panel glass-panel">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <!-- Logic Script -->
+    <script src="script.js"></script>
+</body>
+</html>
