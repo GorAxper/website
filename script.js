@@ -15,7 +15,7 @@ const PLAYLIST = [
 ];
 
 const POLLS = [
-    { q: "Pineapple on pizza: Yes or No?", options: ["Yes, heavenly!", "No, it's a crime!"] },
+    { q: "Pineapple on pizza: Yes or No?", options: ["Yes", "No"] },
     { q: "Better Movie: Interstellar vs. Inception?", options: ["Interstellar", "Inception"] },
     { q: "Morning Bird or Night Owl?", options: ["Early Bird", "Night Owl"] },
     { q: "Coffee or Tea?", options: ["Morning Coffee", "Cozy Tea"] }
@@ -227,28 +227,28 @@ function renderPolls() {
     POLLS.forEach((p, i) => {
         const card = document.createElement('div');
         card.className = "box poll-card available";
+        card.style.display = "flex";
+        card.style.flexDirection = "column";
         card.style.animationDelay = `${i * 0.1}s`;
         
         const existingVote = USER_VOTES[i];
         
-        let pollHTML = `<div class="poll-question">${p.q}</div>`;
+        let pollHTML = `<div class="poll-question" style="flex: 0 0 auto; margin-bottom: 20px;">${p.q}</div>`;
         
         if (existingVote) {
-            // Show chosen option and reset button
             pollHTML += `
-                <div style="width: 100%; text-align: center;">
+                <div style="margin-top: auto; width: 100%; text-align: center;">
                     <div style="background: var(--cream-bg); padding: 15px; border-radius: 12px; border: 1px dashed var(--terracotta); margin-bottom: 15px;">
                         <span style="font-size: 0.7rem; opacity: 0.6; display: block; margin-bottom: 4px; letter-spacing: 1px;">YOU CHOSE</span>
                         <strong style="color: var(--terracotta); font-size: 1.1rem;">${existingVote}</strong>
                     </div>
-                    <button class="nav-btn" onclick="resetVote(${i})" style="font-size: 0.75rem; border: 1px solid var(--border-soft); padding: 8px 16px;">Change Answer</button>
+                    <button class="nav-btn" onclick="resetVote(${i})" style="width: 100%; font-size: 0.75rem; border: 1px solid var(--border-soft); padding: 12px;">Change Answer</button>
                 </div>
             `;
         } else {
-            // Show choice buttons
             pollHTML += `
-                <div style="width: 100%;">
-                    ${p.options.map(opt => `<button class="poll-btn" onclick="vote(${i}, '${opt}')">${opt}</button>`).join('')}
+                <div style="margin-top: auto; width: 100%;">
+                    ${p.options.map(opt => `<button class="poll-btn" onclick="vote(${i}, '${opt}')" style="width: 100%; margin-bottom: 8px;">${opt}</button>`).join('')}
                 </div>
             `;
         }
