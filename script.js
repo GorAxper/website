@@ -1,7 +1,7 @@
 /* --- THE JOURNEY: LOGIC ENGINE --- */
 
 // 1. CONFIGURATION
-const ACCESS_PASSWORD = "2026"; 
+const ACCESS_PASSWORD = "___SITE_PASSWORD___";
 const VANCOUVER_COORDS = { lat: 49.2827, lon: -123.1207 };
 const GORIS_COORDS = { lat: 39.5074, lon: 46.3317 };
 
@@ -14,23 +14,39 @@ const PLAYLIST = [
     { title: "Neneh Cherry, Youssou N'Dour - 7 seconds away", src: "music/seven_seconds.mp3" },
 ];
 
-// Pre-defined polls for Gor
 const GOR_POLLS = [
-    { q: "Pineapple on pizza: Yes or No?", options: ["Yes, heavenly!", "No, it's a crime!"] },
+    { q: "Pineapple on pizza: Yes or No?", options: ["Yes", "No"] },
     { q: "Better Movie: Interstellar vs. Inception?", options: ["Interstellar", "Inception"] },
     { q: "Morning Bird or Night Owl?", options: ["Early Bird", "Night Owl"] },
     { q: "Coffee or Tea?", options: ["Morning Coffee", "Cozy Tea"] }
 ];
 
-// Persistent state for votes and Ani's custom polls using localStorage
-const USER_VOTES = JSON.parse(localStorage.getItem('the_journey_votes')) || {};
-let ANI_POLLS = JSON.parse(localStorage.getItem('the_journey_ani_polls')) || [];
+// --- FIREBASE INITIALIZATION ---
+// Replace the config below with your actual project values from Firebase Console
+const firebaseConfig = {
+    apiKey: "AIzaSyCTRNCNNRLzfDynKGOHdCg3ZWlxUkR_QjQ",
+    authDomain: "debate-98336.firebaseapp.com",
+    databaseURL: "https://debate-98336-default-rtdb.firebaseio.com",
+    projectId: "debate-98336",
+    storageBucket: "debate-98336.firebasestorage.app",
+    messagingSenderId: "533023732138",
+    appId: "1:533023732138:web:53fd75aca036c40ec3fbd3",
+    measurementId: "G-NJ8T459BF5"
+};
+
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const ROOM_ID = ACCESS_PASSWORD; // Per user rules: $room_id level
+
+// State variables synchronized with Firebase
+let USER_VOTES = {};
+let ANI_POLLS = [];
 
 // SVG Assets
 const LOCKED_SVG = `<svg class="lock-icon" viewBox="0 0 24 24"><path d="M12 2C9.243 2 7 4.243 7 7v3H6c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-8c0-1.103-.897-2-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm9 13H6v-8h12v8z"/></svg>`;
 const UNLOCKED_SVG = `<svg class="lock-icon" viewBox="0 0 24 24"><path d="M12 2C9.243 2 7 4.243 7 7v3H6c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-8c0-1.103-.897-2-2-2h-7V7c0-1.654 1.346-3 3-3s3 1.346 3 3v1h2V7c0-2.757-2.243-5-5-5zM6 12h12v8H6v-8z"/></svg>`;
 
-// 2. AUTHENTICATION
+// 2. AUTHENTICATION & SYNC
 function checkPassword() {
     const input = document.getElementById('password-input').value;
     if (input === ACCESS_PASSWORD) {
@@ -46,8 +62,8 @@ function checkPassword() {
             if (foldIcon) foldIcon.innerText = "🎶";
         }
 
+        startRealtimeSync();
         initHomeView();
-        generateGrid();
         setupMusic();
         togglePlay(); 
     } else {
@@ -55,6 +71,28 @@ function checkPassword() {
         error.innerText = "Incorrect Code.";
         setTimeout(() => error.innerText = "", 3000);
     }
+}
+
+function startRealtimeSync() {
+    const roomRef = database.ref(`debate_cards/${ROOM_ID}`);
+    
+    roomRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            USER_VOTES = data.votes || {};
+            // If custom_polls is an object (Firebase pushes), convert to array
+            ANI_POLLS = data.custom_polls ? Object.values(data.custom_polls) : [];
+        } else {
+            USER_VOTES = {};
+            ANI_POLLS = [];
+        }
+
+        // Re-render only if the polls view is currently active
+        const pollsView = document.getElementById('polls-view');
+        if (pollsView && !pollsView.classList.contains('hidden')) {
+            renderPolls();
+        }
+    });
 }
 
 // 3. NAVIGATION
@@ -173,7 +211,6 @@ function applyWeatherEffect(code) {
             const drop = document.createElement('div');
             drop.className = 'rain-drop';
             drop.style.left = Math.random() * 100 + 'vw';
-            drop.style.animation = `fall ${Math.random() + 0.5}s linear infinite`;
             overlay.appendChild(drop);
         }
     } else if (code >= 71 && code <= 77) {
@@ -182,7 +219,6 @@ function applyWeatherEffect(code) {
             flake.className = 'snowflake';
             flake.innerText = '❄';
             flake.style.left = Math.random() * 100 + 'vw';
-            flake.style.animation = `fall ${Math.random() * 3 + 2}s linear infinite`;
             overlay.appendChild(flake);
         }
     }
@@ -226,7 +262,6 @@ function renderPolls() {
     const pollsView = document.getElementById('polls-view');
     if (!pollsView) return;
 
-    // We modify the internal structure to have two clear sections
     pollsView.innerHTML = `
         <header class="page-header">
             <h1 class="header-gradient">The Great Debate</h1>
@@ -247,19 +282,16 @@ function renderPolls() {
     const gorGrid = document.getElementById('gor-grid');
     const aniGrid = document.getElementById('ani-grid');
 
-    // Render Gor's Polls
     GOR_POLLS.forEach((p, i) => {
         const card = createPollCard(p, `gor_${i}`, i * 0.1);
         gorGrid.appendChild(card);
     });
 
-    // Render Ani's Polls
     ANI_POLLS.forEach((p, i) => {
         const card = createPollCard(p, `ani_${i}`, (i + GOR_POLLS.length) * 0.1);
         aniGrid.appendChild(card);
     });
 
-    // Render Ani's PLUS Card
     const plusCard = document.createElement('div');
     plusCard.className = "box available";
     plusCard.style.cursor = "pointer";
@@ -269,8 +301,6 @@ function renderPolls() {
     plusCard.style.display = "flex";
     plusCard.style.justifyContent = "center";
     plusCard.style.alignItems = "center";
-    // Fixed Uniform Height
-    plusCard.style.aspectRatio = "auto";
     plusCard.style.height = "100%";
     plusCard.style.minHeight = "340px"; 
     plusCard.innerHTML = "<span>+</span>";
@@ -284,14 +314,10 @@ function createPollCard(p, id, delay) {
     card.style.display = "flex";
     card.style.flexDirection = "column";
     card.style.animationDelay = `${delay}s`;
-    
-    // Consistent Fixed Card Length
     card.style.height = "100%"; 
     card.style.minHeight = "300px"; 
-    card.style.aspectRatio = "auto"; 
     
     const existingVote = USER_VOTES[id];
-    
     let pollHTML = `<div class="poll-question" style="flex: 0 0 auto; margin-bottom: 20px; min-height: 56px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 700;">${p.q}</div>`;
     
     if (existingVote) {
@@ -305,9 +331,8 @@ function createPollCard(p, id, delay) {
             </div>
         `;
     } else {
-        // Dynamic Button Length based on number of options
         const count = p.options.length;
-        let padding = "12px"; // Default
+        let padding = "12px"; 
         if (count === 4) padding = "10px";
         if (count === 3) padding = "16px";
         if (count === 2) padding = "24px";
@@ -330,16 +355,13 @@ function openPollCreator() {
         modalBody.innerHTML = `
             <div style="padding: 10px; text-align: left;">
                 <h2 class="header-gradient" style="margin-bottom: 20px; text-align: center;">Create New Card</h2>
-                
                 <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">QUESTION (Max 50 chars)</label>
-                <input type="text" id="new-poll-q" maxlength="50" placeholder="e.g. Favorite Season?" style="width: 100%; margin: 8px 0 20px; border: 1.5px solid var(--border-soft);">
-                
+                <input type="text" id="new-poll-q" maxlength="50" placeholder="e.g. Favorite Season?" style="width: 100%; margin: 8px 0 20px;">
                 <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">OPTIONS (At least 2)</label>
-                <input type="text" class="new-poll-opt" placeholder="Option 1" style="width: 100%; margin: 8px 0; border: 1.5px solid var(--border-soft);">
-                <input type="text" class="new-poll-opt" placeholder="Option 2" style="width: 100%; margin: 8px 0; border: 1.5px solid var(--border-soft);">
-                <input type="text" class="new-poll-opt" placeholder="Option 3 (Optional)" style="width: 100%; margin: 8px 0; border: 1.5px solid var(--border-soft);">
-                <input type="text" class="new-poll-opt" placeholder="Option 4 (Optional)" style="width: 100%; margin: 8px 0 25px; border: 1.5px solid var(--border-soft);">
-                
+                <input type="text" class="new-poll-opt" placeholder="Option 1" style="width: 100%; margin: 8px 0;">
+                <input type="text" class="new-poll-opt" placeholder="Option 2" style="width: 100%; margin: 8px 0;">
+                <input type="text" class="new-poll-opt" placeholder="Option 3 (Optional)" style="width: 100%; margin: 8px 0;">
+                <input type="text" class="new-poll-opt" placeholder="Option 4 (Optional)" style="width: 100%; margin: 8px 0 25px;">
                 <button class="nav-btn active" onclick="saveNewPoll()" style="width: 100%; padding: 15px;">Create Card</button>
             </div>
         `;
@@ -355,20 +377,16 @@ function saveNewPoll() {
     if (q.length < 3) { alert("Please enter a valid question."); return; }
     if (options.length < 2) { alert("Please enter at least two options."); return; }
 
-    ANI_POLLS.push({ q, options });
-    localStorage.setItem('the_journey_ani_polls', JSON.stringify(ANI_POLLS));
+    const newPoll = { q, options };
+    // Firebase real-time push
+    database.ref(`debate_cards/${ROOM_ID}/custom_polls`).push(newPoll);
     
     closeModal();
-    renderPolls();
 }
 
 function vote(id, choice) { 
-    // Save the choice to state and localStorage
-    USER_VOTES[id] = choice;
-    localStorage.setItem('the_journey_votes', JSON.stringify(USER_VOTES));
-    
-    // Refresh the UI
-    renderPolls();
+    // Update Firebase votes
+    database.ref(`debate_cards/${ROOM_ID}/votes/${id}`).set(choice);
     
     const modalBody = document.getElementById('modal-body');
     const modal = document.getElementById('content-modal');
@@ -385,12 +403,8 @@ function vote(id, choice) {
 }
 
 function resetVote(id) {
-    // Clear choice from state and localStorage
-    delete USER_VOTES[id];
-    localStorage.setItem('the_journey_votes', JSON.stringify(USER_VOTES));
-    
-    // Refresh the UI
-    renderPolls();
+    // Remove from Firebase
+    database.ref(`debate_cards/${ROOM_ID}/votes/${id}`).remove();
 }
 
 // 7. MUSIC PLAYER
@@ -401,19 +415,12 @@ const volumeControl = document.getElementById('volume-control');
 
 function setupMusic() {
     if (!audio) return;
-    
-    // Set default volume to 50%
     audio.volume = 0.5;
     if (volumeControl) volumeControl.value = 0.5;
-
     updateTrackInfo();
     audio.onended = () => changeTrack(1);
-
-    // Volume Listener
     if (volumeControl) {
-        volumeControl.addEventListener('input', (e) => {
-            audio.volume = e.target.value;
-        });
+        volumeControl.addEventListener('input', (e) => { audio.volume = e.target.value; });
     }
 }
 
@@ -456,12 +463,11 @@ function suggestMusic() {
             <div style="padding: 10px;">
                 <h2 class="header-gradient" style="margin-bottom: 15px;">Suggest a Track</h2>
                 <p style="margin-bottom: 20px; opacity: 0.8;">What should be on our shared playlist?</p>
-                <input type="text" id="music-suggestion-input" placeholder="Artist - Song Title" style="width: 100%; margin-bottom: 25px; border: 1.5px solid var(--border-soft);">
+                <input type="text" id="music-suggestion-input" placeholder="Artist - Song Title" style="width: 100%; margin-bottom: 25px;">
                 <button class="nav-btn active" onclick="submitMusicSuggestion()" style="width: 100%; padding: 15px;">Submit Suggestion</button>
             </div>
         `;
         modal.classList.remove('hidden');
-        // Small delay to ensure focus works on rendered input
         setTimeout(() => document.getElementById('music-suggestion-input')?.focus(), 100);
     }
 }
@@ -478,9 +484,7 @@ function submitMusicSuggestion() {
                 <button class="nav-btn active" onclick="closeModal()" style="width: 100%; padding: 15px;">Close</button>
             </div>
         `;
-    } else {
-        closeModal();
-    }
+    } else { closeModal(); }
 }
 
 function openModal(d) {

@@ -47,8 +47,33 @@ h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: upper
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
 }
 
-.full-screen { height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-.hidden { display: none !important; }
+/* Updated Full Screen to be a fixed overlay for login */
+.full-screen { 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 20px; 
+    z-index: 10000; /* Ensures it sits above everything including nav */
+    background: var(--cream-bg); /* Prevents background content flickering during load */
+    transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+/* Specifically target login background to keep particles visible if background is removed */
+#login-screen {
+    background: var(--cream-bg);
+}
+
+.hidden { 
+    display: none !important; 
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
 
 .glass-panel {
     background: var(--white);
@@ -137,7 +162,7 @@ h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: upper
 .big-date { font-size: 1.2rem; font-weight: 600; opacity: 0.6; }
 
 /* --- LOGIN DESIGN --- */
-.login-card { padding: 4rem; text-align: center; max-width: 440px; width: 100%; border-top: 6px solid var(--terracotta); }
+.login-card { padding: 4rem; text-align: center; max-width: 440px; width: 100%; border-top: 6px solid var(--terracotta); position: relative; z-index: 10001; }
 .input-group { margin-top: 30px; display: flex; flex-direction: column; gap: 20px; }
 input { padding: 16px; border-radius: 12px; border: 1.5px solid #eee; text-align: center; font-size: 1rem; outline: none; transition: 0.3s; }
 input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 141, 94, 0.1); }
@@ -157,7 +182,6 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
 }
 
 .box {
-    aspect-ratio: 1 / 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
