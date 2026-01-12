@@ -14,15 +14,17 @@ const PLAYLIST = [
     { title: "Neneh Cherry, Youssou N'Dour - 7 seconds away", src: "music/seven_seconds.mp3" },
 ];
 
-const POLLS = [
-    { q: "Pineapple on pizza: Yes or No?", options: ["Yes", "No"] },
+// Pre-defined polls for Gor
+const GOR_POLLS = [
+    { q: "Pineapple on pizza: Yes or No?", options: ["Yes, heavenly!", "No, it's a crime!"] },
     { q: "Better Movie: Interstellar vs. Inception?", options: ["Interstellar", "Inception"] },
     { q: "Morning Bird or Night Owl?", options: ["Early Bird", "Night Owl"] },
     { q: "Coffee or Tea?", options: ["Morning Coffee", "Cozy Tea"] }
 ];
 
-// Persistent state for votes using localStorage
+// Persistent state for votes and Ani's custom polls using localStorage
 const USER_VOTES = JSON.parse(localStorage.getItem('the_journey_votes')) || {};
+let ANI_POLLS = JSON.parse(localStorage.getItem('the_journey_ani_polls')) || [];
 
 // SVG Assets
 const LOCKED_SVG = `<svg class="lock-icon" viewBox="0 0 24 24"><path d="M12 2C9.243 2 7 4.243 7 7v3H6c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-8c0-1.103-.897-2-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm9 13H6v-8h12v8z"/></svg>`;
@@ -221,46 +223,141 @@ function generateGrid() {
 
 // 6. PAGE 3 LOGIC: THE GREAT DEBATE
 function renderPolls() {
-    const grid = document.getElementById('polls-grid');
-    if (!grid) return;
-    grid.innerHTML = "";
-    POLLS.forEach((p, i) => {
-        const card = document.createElement('div');
-        card.className = "box poll-card available";
-        card.style.display = "flex";
-        card.style.flexDirection = "column";
-        card.style.animationDelay = `${i * 0.1}s`;
-        
-        const existingVote = USER_VOTES[i];
-        
-        let pollHTML = `<div class="poll-question" style="flex: 0 0 auto; margin-bottom: 20px;">${p.q}</div>`;
-        
-        if (existingVote) {
-            pollHTML += `
-                <div style="margin-top: auto; width: 100%; text-align: center;">
-                    <div style="background: var(--cream-bg); padding: 15px; border-radius: 12px; border: 1px dashed var(--terracotta); margin-bottom: 15px;">
-                        <span style="font-size: 0.7rem; opacity: 0.6; display: block; margin-bottom: 4px; letter-spacing: 1px;">YOU CHOSE</span>
-                        <strong style="color: var(--terracotta); font-size: 1.1rem;">${existingVote}</strong>
-                    </div>
-                    <button class="nav-btn" onclick="resetVote(${i})" style="width: 100%; font-size: 0.75rem; border: 1px solid var(--border-soft); padding: 12px;">Change Answer</button>
-                </div>
-            `;
-        } else {
-            pollHTML += `
-                <div style="margin-top: auto; width: 100%;">
-                    ${p.options.map(opt => `<button class="poll-btn" onclick="vote(${i}, '${opt}')" style="width: 100%; margin-bottom: 8px;">${opt}</button>`).join('')}
-                </div>
-            `;
-        }
-        
-        card.innerHTML = pollHTML;
-        grid.appendChild(card);
+    const pollsView = document.getElementById('polls-view');
+    if (!pollsView) return;
+
+    // We modify the internal structure to have two clear sections
+    pollsView.innerHTML = `
+        <header class="page-header">
+            <h1 class="header-gradient">The Great Debate</h1>
+            <p>Settling the most important questions of our time.</p>
+        </header>
+
+        <div class="debate-section">
+            <h2 class="section-title header-gradient" style="margin: 40px 0 20px; font-size: 1.8rem;">Gor</h2>
+            <div class="calendar-grid" id="gor-grid"></div>
+        </div>
+
+        <div class="debate-section">
+            <h2 class="section-title header-gradient" style="margin: 60px 0 20px; font-size: 1.8rem;">Ani</h2>
+            <div class="calendar-grid" id="ani-grid"></div>
+        </div>
+    `;
+
+    const gorGrid = document.getElementById('gor-grid');
+    const aniGrid = document.getElementById('ani-grid');
+
+    // Render Gor's Polls
+    GOR_POLLS.forEach((p, i) => {
+        const card = createPollCard(p, `gor_${i}`, i * 0.1);
+        gorGrid.appendChild(card);
     });
+
+    // Render Ani's Polls
+    ANI_POLLS.forEach((p, i) => {
+        const card = createPollCard(p, `ani_${i}`, (i + GOR_POLLS.length) * 0.1);
+        aniGrid.appendChild(card);
+    });
+
+    // Render Ani's PLUS Card
+    const plusCard = document.createElement('div');
+    plusCard.className = "box available";
+    plusCard.style.cursor = "pointer";
+    plusCard.style.border = "2px dashed var(--terracotta)";
+    plusCard.style.fontSize = "3rem";
+    plusCard.style.color = "var(--terracotta)";
+    plusCard.style.display = "flex";
+    plusCard.style.justifyContent = "center";
+    plusCard.style.alignItems = "center";
+    // Fix: Remove aspect-ratio and set height to 100% to match row height
+    plusCard.style.aspectRatio = "auto";
+    plusCard.style.height = "100%";
+    plusCard.style.minHeight = "240px"; // Ensure it feels substantial even when empty
+    plusCard.innerHTML = "<span>+</span>";
+    plusCard.onclick = openPollCreator;
+    aniGrid.appendChild(plusCard);
 }
 
-function vote(index, choice) { 
+function createPollCard(p, id, delay) {
+    const card = document.createElement('div');
+    card.className = "box poll-card available";
+    card.style.display = "flex";
+    card.style.flexDirection = "column";
+    card.style.animationDelay = `${delay}s`;
+    card.style.height = "100%"; // Ensure card fills grid height
+    card.style.aspectRatio = "auto"; // Override fixed aspect ratio for varying content
+    
+    const existingVote = USER_VOTES[id];
+    
+    // Fix: Add a min-height and flex-center to the question area
+    let pollHTML = `<div class="poll-question" style="flex: 0 0 auto; margin-bottom: 20px; min-height: 56px; display: flex; align-items: center; justify-content: center; text-align: center;">${p.q}</div>`;
+    
+    if (existingVote) {
+        // Fix: Use justify-content: center to keep the choice message balanced in the middle of the bodyspace
+        pollHTML += `
+            <div style="margin-top: auto; flex: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; text-align: center;">
+                <div style="background: var(--cream-bg); padding: 15px; border-radius: 12px; border: 1px dashed var(--terracotta); margin-bottom: 15px;">
+                    <span style="font-size: 0.7rem; opacity: 0.6; display: block; margin-bottom: 4px; letter-spacing: 1px;">YOU CHOSE</span>
+                    <strong style="color: var(--terracotta); font-size: 1.1rem;">${existingVote}</strong>
+                </div>
+                <button class="nav-btn" onclick="resetVote('${id}')" style="width: 100%; font-size: 0.75rem; border: 1px solid var(--border-soft); padding: 12px;">Change Answer</button>
+            </div>
+        `;
+    } else {
+        // Fix: Use justify-content: center and gap to spread buttons evenly in the middle-bottom
+        pollHTML += `
+            <div style="margin-top: auto; flex: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; gap: 10px;">
+                ${p.options.map(opt => `<button class="poll-btn" onclick="vote('${id}', '${opt}')" style="width: 100%; margin: 0; padding: 12px;">${opt}</button>`).join('')}
+            </div>
+        `;
+    }
+    
+    card.innerHTML = pollHTML;
+    return card;
+}
+
+function openPollCreator() {
+    const modalBody = document.getElementById('modal-body');
+    const modal = document.getElementById('content-modal');
+    if (modal && modalBody) {
+        modalBody.innerHTML = `
+            <div style="padding: 10px; text-align: left;">
+                <h2 class="header-gradient" style="margin-bottom: 20px; text-align: center;">Create New Card</h2>
+                
+                <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">QUESTION (Max 50 chars)</label>
+                <input type="text" id="new-poll-q" maxlength="50" placeholder="e.g. Favorite Season?" style="width: 100%; margin: 8px 0 20px; border: 1.5px solid var(--border-soft);">
+                
+                <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">OPTIONS (At least 2)</label>
+                <input type="text" class="new-poll-opt" placeholder="Option 1" style="width: 100%; margin: 8px 0; border: 1.5px solid var(--border-soft);">
+                <input type="text" class="new-poll-opt" placeholder="Option 2" style="width: 100%; margin: 8px 0; border: 1.5px solid var(--border-soft);">
+                <input type="text" class="new-poll-opt" placeholder="Option 3 (Optional)" style="width: 100%; margin: 8px 0; border: 1.5px solid var(--border-soft);">
+                <input type="text" class="new-poll-opt" placeholder="Option 4 (Optional)" style="width: 100%; margin: 8px 0 25px; border: 1.5px solid var(--border-soft);">
+                
+                <button class="nav-btn active" onclick="saveNewPoll()" style="width: 100%; padding: 15px;">Create Card</button>
+            </div>
+        `;
+        modal.classList.remove('hidden');
+    }
+}
+
+function saveNewPoll() {
+    const q = document.getElementById('new-poll-q').value.trim();
+    const optInputs = document.querySelectorAll('.new-poll-opt');
+    const options = Array.from(optInputs).map(i => i.value.trim()).filter(v => v !== "");
+
+    if (q.length < 3) { alert("Please enter a valid question."); return; }
+    if (options.length < 2) { alert("Please enter at least two options."); return; }
+
+    ANI_POLLS.push({ q, options });
+    localStorage.setItem('the_journey_ani_polls', JSON.stringify(ANI_POLLS));
+    
+    closeModal();
+    renderPolls();
+}
+
+function vote(id, choice) { 
     // Save the choice to state and localStorage
-    USER_VOTES[index] = choice;
+    USER_VOTES[id] = choice;
     localStorage.setItem('the_journey_votes', JSON.stringify(USER_VOTES));
     
     // Refresh the UI
@@ -280,9 +377,9 @@ function vote(index, choice) {
     }
 }
 
-function resetVote(index) {
+function resetVote(id) {
     // Clear choice from state and localStorage
-    delete USER_VOTES[index];
+    delete USER_VOTES[id];
     localStorage.setItem('the_journey_votes', JSON.stringify(USER_VOTES));
     
     // Refresh the UI
