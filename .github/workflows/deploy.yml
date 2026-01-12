@@ -1,0 +1,16 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: ["main"]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Replace Password Placeholder
+        run: sed -i "s/___SITE_PASSWORD___/${{ secrets.MY_SITE_PASSWORD }}/g" script.js
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: . # The folder where your files are
+          branch: gh-pages
