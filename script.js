@@ -21,6 +21,9 @@ const POLLS = [
     { q: "Coffee or Tea?", options: ["Morning Coffee", "Cozy Tea"] }
 ];
 
+// Persistent state for votes using localStorage
+const USER_VOTES = JSON.parse(localStorage.getItem('the_journey_votes')) || {};
+
 // SVG Assets
 const LOCKED_SVG = `<svg class="lock-icon" viewBox="0 0 24 24"><path d="M12 2C9.243 2 7 4.243 7 7v3H6c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-8c0-1.103-.897-2-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm9 13H6v-8h12v8z"/></svg>`;
 const UNLOCKED_SVG = `<svg class="lock-icon" viewBox="0 0 24 24"><path d="M12 2C9.243 2 7 4.243 7 7v3H6c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-8c0-1.103-.897-2-2-2h-7V7c0-1.654 1.346-3 3-3s3 1.346 3 3v1h2V7c0-2.757-2.243-5-5-5zM6 12h12v8H6v-8z"/></svg>`;
@@ -225,29 +228,65 @@ function renderPolls() {
         const card = document.createElement('div');
         card.className = "box poll-card available";
         card.style.animationDelay = `${i * 0.1}s`;
-        card.innerHTML = `
-            <div class="poll-question">${p.q}</div>
-            <div style="width: 100%;">
-                ${p.options.map(opt => `<button class="poll-btn" onclick="vote('${opt}')">${opt}</button>`).join('')}
-            </div>
-        `;
+        
+        const existingVote = USER_VOTES[i];
+        
+        let pollHTML = `<div class="poll-question">${p.q}</div>`;
+        
+        if (existingVote) {
+            // Show chosen option and reset button
+            pollHTML += `
+                <div style="width: 100%; text-align: center;">
+                    <div style="background: var(--cream-bg); padding: 15px; border-radius: 12px; border: 1px dashed var(--terracotta); margin-bottom: 15px;">
+                        <span style="font-size: 0.7rem; opacity: 0.6; display: block; margin-bottom: 4px; letter-spacing: 1px;">YOU CHOSE</span>
+                        <strong style="color: var(--terracotta); font-size: 1.1rem;">${existingVote}</strong>
+                    </div>
+                    <button class="nav-btn" onclick="resetVote(${i})" style="font-size: 0.75rem; border: 1px solid var(--border-soft); padding: 8px 16px;">Change Answer</button>
+                </div>
+            `;
+        } else {
+            // Show choice buttons
+            pollHTML += `
+                <div style="width: 100%;">
+                    ${p.options.map(opt => `<button class="poll-btn" onclick="vote(${i}, '${opt}')">${opt}</button>`).join('')}
+                </div>
+            `;
+        }
+        
+        card.innerHTML = pollHTML;
         grid.appendChild(card);
     });
 }
 
-function vote(c) { 
+function vote(index, choice) { 
+    // Save the choice to state and localStorage
+    USER_VOTES[index] = choice;
+    localStorage.setItem('the_journey_votes', JSON.stringify(USER_VOTES));
+    
+    // Refresh the UI
+    renderPolls();
+    
     const modalBody = document.getElementById('modal-body');
     const modal = document.getElementById('content-modal');
     if (modal && modalBody) {
         modalBody.innerHTML = `
             <div style="padding: 20px;">
                 <h2 class="header-gradient" style="margin-bottom: 20px;">Choice Recorded!</h2>
-                <p style="font-size: 1.1rem; margin-bottom: 25px;">You selected: <strong>${c}</strong></p>
+                <p style="font-size: 1.1rem; margin-bottom: 25px;">You selected: <strong>${choice}</strong></p>
                 <button class="nav-btn active" onclick="closeModal()" style="width: 100%; padding: 15px;">Perfect</button>
             </div>
         `;
         modal.classList.remove('hidden');
     }
+}
+
+function resetVote(index) {
+    // Clear choice from state and localStorage
+    delete USER_VOTES[index];
+    localStorage.setItem('the_journey_votes', JSON.stringify(USER_VOTES));
+    
+    // Refresh the UI
+    renderPolls();
 }
 
 // 7. MUSIC PLAYER
