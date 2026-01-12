@@ -235,7 +235,20 @@ function renderPolls() {
     });
 }
 
-function vote(c) { alert(`Vote recorded: ${c}`); }
+function vote(c) { 
+    const modalBody = document.getElementById('modal-body');
+    const modal = document.getElementById('content-modal');
+    if (modal && modalBody) {
+        modalBody.innerHTML = `
+            <div style="padding: 20px;">
+                <h2 class="header-gradient" style="margin-bottom: 20px;">Choice Recorded!</h2>
+                <p style="font-size: 1.1rem; margin-bottom: 25px;">You selected: <strong>${c}</strong></p>
+                <button class="nav-btn active" onclick="closeModal()" style="width: 100%; padding: 15px;">Perfect</button>
+            </div>
+        `;
+        modal.classList.remove('hidden');
+    }
+}
 
 // 7. MUSIC PLAYER
 let trackIdx = 0;
@@ -292,13 +305,50 @@ function toggleMusicFold() {
     if (container) container.classList.toggle('folded'); 
 }
 
-function suggestMusic() { const l = prompt("Enter suggestion:"); if (l) alert("Success!"); }
+function suggestMusic() { 
+    const modalBody = document.getElementById('modal-body');
+    const modal = document.getElementById('content-modal');
+    if (modal && modalBody) {
+        modalBody.innerHTML = `
+            <div style="padding: 10px;">
+                <h2 class="header-gradient" style="margin-bottom: 15px;">Suggest a Track</h2>
+                <p style="margin-bottom: 20px; opacity: 0.8;">What should be on our shared playlist?</p>
+                <input type="text" id="music-suggestion-input" placeholder="Artist - Song Title" style="width: 100%; margin-bottom: 25px; border: 1.5px solid var(--border-soft);">
+                <button class="nav-btn active" onclick="submitMusicSuggestion()" style="width: 100%; padding: 15px;">Submit Suggestion</button>
+            </div>
+        `;
+        modal.classList.remove('hidden');
+        // Small delay to ensure focus works on rendered input
+        setTimeout(() => document.getElementById('music-suggestion-input')?.focus(), 100);
+    }
+}
+
+function submitMusicSuggestion() {
+    const input = document.getElementById('music-suggestion-input');
+    const val = input ? input.value : "";
+    if (val.trim()) {
+        const modalBody = document.getElementById('modal-body');
+        modalBody.innerHTML = `
+            <div style="padding: 20px;">
+                <h2 class="header-gradient" style="margin-bottom: 15px;">Got it!</h2>
+                <p style="margin-bottom: 25px;">"${val}" has been added to our shared list. 🎧</p>
+                <button class="nav-btn active" onclick="closeModal()" style="width: 100%; padding: 15px;">Close</button>
+            </div>
+        `;
+    } else {
+        closeModal();
+    }
+}
 
 function openModal(d) {
     const modalBody = document.getElementById('modal-body');
     const modal = document.getElementById('content-modal');
     if (modal && modalBody) {
-        modalBody.innerHTML = `<h2>${d}</h2><p>Archive opened 🔓</p>`;
+        modalBody.innerHTML = `
+            <h2 class="header-gradient" style="margin-bottom: 15px;">${d}</h2>
+            <p style="margin-bottom: 25px; line-height: 1.6;">Shared memory archived. 🔓</p>
+            <button class="nav-btn active" onclick="closeModal()" style="width: 100%; padding: 15px;">Close Archive</button>
+        `;
         modal.classList.remove('hidden');
     }
 }
