@@ -11,8 +11,11 @@ const END_DATE = new Date(2026, 11, 31);
 const INTERVAL_DAYS = 15;
 
 const PLAYLIST = [
-    { title: "Jamiroquai - Tallulah", src: "music/tallulah.mp3" },
-    { title: "Neneh Cherry, Youssou N'Dour - 7 seconds away", src: "music/seven_seconds.mp3" },
+    { title: "Arno Babajanyan - Elegia", src: "music/Arno Babajanyan - Elegia.mp3" },
+    { title: "Charles Aznavour - She", src: "music/Charles Aznavour - She.mp3" },
+    { title: "Imany - You will never know", src: "music/Imany - You will never know.mp3" },
+    { title: "Ludovico Einaudi - Una Mattina", src: "music/Ludovico Einaudi - Una Mattina.mp3" },
+    { title: "Tigran Mansuryan - Siro Meghedi", src: "music/Tigran Mansuryan - Siro Meghedi.mp3" },
 ];
 
 const GOR_POLLS = [
