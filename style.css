@@ -65,7 +65,73 @@ h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: upper
 
 /* Specifically target login background to keep particles visible if background is removed */
 #login-screen {
-    background: var(--cream-bg);
+    /* Use the uploaded image as a static backdrop */
+    background: url('goris4.PNG') no-repeat center center fixed;
+    background-size: cover;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+/* Dark overlay to ensure the login card pops and remains professional */
+#login-screen::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg, 
+        rgba(5, 25, 55, 0.4) 0%, 
+        rgba(5, 25, 55, 0.7) 100%
+    );
+    z-index: 0;
+}
+
+.login-card {
+    position: relative;
+    z-index: 1;
+    padding: 3.5rem;
+    text-align: center;
+    max-width: 460px;
+    width: 90%;
+    
+    /* Ultra-clean Glassmorphism */
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    
+    /* Subtle "Glow" border to make the card feel premium */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-top: 6px solid var(--terracotta);
+    
+    /* Soft, deep shadow for a floating effect */
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+    border-radius: 28px;
+}
+
+@keyframes backgroundSlowZoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+}
+
+/* Refined typography for Login */
+.login-card h1 {
+    margin-bottom: 10px;
+    font-size: 2.2rem;
+}
+
+.login-card p {
+    font-size: 0.95rem;
+    opacity: 0.8;
+    color: var(--deep-navy);
 }
 
 .hidden { 
@@ -162,7 +228,6 @@ h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: upper
 .big-date { font-size: 1.2rem; font-weight: 600; opacity: 0.6; }
 
 /* --- LOGIN DESIGN --- */
-.login-card { padding: 4rem; text-align: center; max-width: 440px; width: 100%; border-top: 6px solid var(--terracotta); position: relative; z-index: 10001; }
 .input-group { margin-top: 30px; display: flex; flex-direction: column; gap: 20px; }
 input { padding: 16px; border-radius: 12px; border: 1.5px solid #eee; text-align: center; font-size: 1rem; outline: none; transition: 0.3s; }
 input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 141, 94, 0.1); }
