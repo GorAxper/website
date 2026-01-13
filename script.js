@@ -265,7 +265,7 @@ function renderPolls() {
 
     pollsView.innerHTML = `
         <header class="page-header">
-            <h1 class="header-gradient">The Great Debate</h1>
+            <h1 class="header-gradient">Questions and Answers</h1>
             <p>Settling the most important questions of our time.</p>
         </header>
 
