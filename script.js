@@ -270,12 +270,16 @@ function renderPolls() {
         </header>
 
         <div class="debate-section">
-            <h2 class="section-title header-gradient" style="margin: 40px 0 20px; font-size: 1.8rem;">Gor</h2>
+            <h2 class="section-title header-gradient separable-header" style="margin: 40px 0 30px; font-size: 1.8rem;">
+                <span>Gor</span>
+            </h2>
             <div class="calendar-grid" id="gor-grid"></div>
         </div>
 
         <div class="debate-section">
-            <h2 class="section-title header-gradient" style="margin: 60px 0 20px; font-size: 1.8rem;">Ani</h2>
+            <h2 class="section-title header-gradient separable-header" style="margin: 60px 0 30px; font-size: 1.8rem;">
+                <span>Ani</span>
+            </h2>
             <div class="calendar-grid" id="ani-grid"></div>
         </div>
     `;

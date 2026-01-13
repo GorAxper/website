@@ -412,3 +412,20 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
     .big-time { font-size: 2.8rem; }
     .weather-visual { width: 120px; height: 120px; }
 }
+
+.separable-header {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    gap: 20px; /* Space between the lines and the name */
+}
+
+.separable-header::before,
+.separable-header::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    /* Uses a fade-out gradient to look more premium */
+    background: linear-gradient(to right, transparent, var(--terracotta), transparent);
+    opacity: 0.4;
+}
