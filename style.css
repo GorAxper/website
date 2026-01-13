@@ -174,7 +174,7 @@ h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: upper
     font-weight: 700;
     cursor: pointer;
     transition: 0.3s;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
 }
 
 .nav-btn.active {
