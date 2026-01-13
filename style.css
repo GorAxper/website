@@ -125,7 +125,7 @@ h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: upper
 /* Refined typography for Login */
 .login-card h1 {
     margin-bottom: 10px;
-    font-size: 2.2rem;
+    font-size: 2.5rem;
 }
 
 .login-card p {
@@ -228,10 +228,10 @@ h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: upper
 .big-date { font-size: 1.2rem; font-weight: 600; opacity: 0.6; }
 
 /* --- LOGIN DESIGN --- */
-.input-group { margin-top: 30px; display: flex; flex-direction: column; gap: 20px; }
+.input-group { margin-top: 20px; display: flex; flex-direction: column; gap: 30px; }
 input { padding: 16px; border-radius: 12px; border: 1.5px solid #eee; text-align: center; font-size: 1rem; outline: none; transition: 0.3s; }
 input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 141, 94, 0.1); }
-#login-button { background: var(--deep-navy); color: var(--white); border: none; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.4s; }
+#login-button { background: var(--deep-navy); color: var(--white); border: none; padding: 16px; border-radius: 12px; font-size: 1rem; font-weight: 900; cursor: pointer; transition: 0.4s; }
 #login-button:hover { background: var(--terracotta); transform: translateY(-2px); }
 
 .error-text { color: var(--terracotta); margin-top: 10px; font-weight: 600; font-size: 0.85rem; }
