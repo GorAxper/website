@@ -66,7 +66,7 @@ h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: upper
 /* Specifically target login background to keep particles visible if background is removed */
 #login-screen {
     /* Use the uploaded image as a static backdrop */
-    background: url('goris4.PNG') no-repeat center center fixed;
+    background: url('goris5.png') no-repeat center center fixed;
     background-size: cover;
     position: fixed;
     top: 0;
