@@ -25,6 +25,10 @@ const GOR_POLLS = [
     { q: "Coffee or Tea?", options: ["Morning Coffee", "Cozy Tea"] }
 ];
 
+const GIFT_DAYS = [
+    "2025-10-15", "2025-12-25", "2026-01-14", "2026-02-14", "2026-05-20"
+];
+
 // --- FIREBASE INITIALIZATION ---
 // Replace the config below with your actual project values from Firebase Console
 const firebaseConfig = {
@@ -229,36 +233,87 @@ function applyWeatherEffect(code) {
 }
 
 // 5. PAGE 2 LOGIC: ARCHIVES
+let currentDisplayDate = new Date(2026, 0, 1); // Starts at Jan 2026
+
 function generateGrid() {
-    const grid = document.getElementById('calendar-grid');
-    if (!grid) return;
-    const today = new Date(); 
-    let current = new Date(START_DATE);
-    let unlockedCount = 0;
-    let totalCount = 0;
-    let stagger = 0;
+    const gridContainer = document.getElementById('calendar-grid');
+    if (!gridContainer) return;
+    
+    // Clear container and setup the Navigation Header
+    gridContainer.innerHTML = "";
+    gridContainer.className = ""; 
 
-    grid.innerHTML = "";
-    while (current <= END_DATE) {
-        const boxDate = new Date(current);
-        const isPast = today >= boxDate;
-        if (isPast) unlockedCount++;
-        totalCount++;
+    const year = currentDisplayDate.getFullYear();
+    const month = currentDisplayDate.getMonth();
+    const monthName = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDisplayDate);
 
-        const box = document.createElement('div');
-        box.className = `box ${isPast ? 'available' : 'locked'}`;
-        box.style.animationDelay = `${stagger}s`;
-        stagger += 0.05;
+    // 1. Create Navigation Bar
+    const navWrapper = document.createElement('div');
+    navWrapper.className = "calendar-nav-bar";
+    navWrapper.innerHTML = `
+        <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
+        <div class="month-name">${monthName}</div>
+        <button class="nav-btn" onclick="changeMonth(1)">❯</button>
+    `;
+    gridContainer.appendChild(navWrapper);
 
-        const dateStr = boxDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        box.innerHTML = `${isPast ? UNLOCKED_SVG : LOCKED_SVG} <div class="date-label">${dateStr}</div>`;
-        
-        if (isPast) box.onclick = () => openModal(dateStr);
-        grid.appendChild(box);
-        current.setDate(current.getDate() + INTERVAL_DAYS); 
+    // 2. Create Calendar Grid
+    const monthWrapper = document.createElement('div');
+    monthWrapper.className = "milestone-calendar-wrapper";
+
+    const calGrid = document.createElement('div');
+    calGrid.className = "milestone-calendar-grid";
+
+    // Weekday Headers
+    ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(day => {
+        calGrid.innerHTML += `<div class="calendar-day-header">${day}</div>`;
+    });
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+
+    // Empty cells for padding
+    for (let i = 0; i < firstDay; i++) {
+        calGrid.innerHTML += `<div class="calendar-cell empty"></div>`;
     }
+
+    // Generate Days
+    for (let d = 1; d <= daysInMonth; d++) {
+        const dateObj = new Date(year, month, d);
+        const dateISO = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        
+        const isGift = GIFT_DAYS.includes(dateISO);
+        const isPastOrToday = today >= dateObj;
+        
+        const cell = document.createElement('div');
+        // Only gift days get the 'available' class and cursor pointer
+        cell.className = `calendar-cell ${isGift && isPastOrToday ? 'available gift-day' : 'regular-day'}`;
+        
+        cell.innerHTML = `<span>${d}</span>${isGift ? '<div class="gift-icon">🎁</div>' : ''}`;
+        
+        // CLICK LOGIC: Only gift days that have passed or are today can be clicked
+        if (isGift && isPastOrToday) {
+            cell.onclick = () => openModal(`Gift for ${monthName} ${d}`);
+        } else {
+            cell.onclick = null; // Ensure others are not clickable
+        }
+        
+        calGrid.appendChild(cell);
+    }
+
+    monthWrapper.appendChild(calGrid);
+    gridContainer.appendChild(monthWrapper);
+    
+    // Update the status pill
     const statusPill = document.getElementById('status-pill');
-    if (statusPill) statusPill.innerText = `${unlockedCount} / ${totalCount} Milestones Unlocked`;
+    if (statusPill) statusPill.innerText = "Only Gift Days are Unlocked";
+}
+
+// Function to handle the button clicks
+function changeMonth(delta) {
+    currentDisplayDate.setMonth(currentDisplayDate.getMonth() + delta);
+    generateGrid();
 }
 
 // 6. PAGE 3 LOGIC: THE GREAT DEBATE
