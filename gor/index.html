@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Music Requests</title>
+    <link rel="stylesheet" href="../style.css"> <style>
+        body { padding: 40px; background: #eef7ff; font-family: 'Inter', sans-serif; }
+        .admin-card { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .request-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .request-text { font-weight: 700; color: #051937; }
+        .request-date { font-size: 0.75rem; opacity: 0.5; }
+        .delete-btn { color: #FA6868; cursor: pointer; font-size: 0.8rem; font-weight: bold; border: none; background: none; }
+    </style>
+</head>
+<body>
+    <div class="admin-card">
+        <h1 class="header-gradient" style="margin-bottom: 20px;">Music Requests</h1>
+        <div id="request-list">Loading...</div>
+        <br>
+        <a href="../index.html" class="nav-btn" style="text-decoration: none; display: inline-block; text-align: center;">Back to Site</a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <script>
+        // Use the same config from your main script.js
+        const firebaseConfig = {
+            apiKey: "AIzaSyCTRNCNNRLzfDynKGOHdCg3ZWlxUkR_QjQ",
+            authDomain: "debate-98336.firebaseapp.com",
+            databaseURL: "https://debate-98336-default-rtdb.firebaseio.com",
+            projectId: "debate-98336",
+            storageBucket: "debate-98336.firebasestorage.app",
+            messagingSenderId: "533023732138",
+            appId: "1:533023732138:web:53fd75aca036c40ec3fbd3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const ROOM_ID = "2026"; 
+
+        const listEl = document.getElementById('request-list');
+
+        // Fetch Requests
+        database.ref(`debate_cards/${ROOM_ID}/music_suggestions`).on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                listEl.innerHTML = "<p>No requests yet.</p>";
+                return;
+            }
+
+            let html = "";
+            Object.keys(data).reverse().forEach(key => {
+                const item = data[key];
+                html += `
+                    <div class="request-item">
+                        <div>
+                            <div class="request-text">${item.suggestion}</div>
+                            <div class="request-date">${item.date}</div>
+                        </div>
+                        <button class="delete-btn" onclick="deleteReq('${key}')">Remove</button>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = html;
+        });
+
+        function deleteReq(key) {
+            if(confirm("Delete this suggestion?")) {
+                database.ref(`debate_cards/${ROOM_ID}/music_suggestions/${key}`).remove();
+            }
+        }
+    </script>
+</body>
+</html>
