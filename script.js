@@ -310,9 +310,7 @@ function generateGrid() {
     monthWrapper.appendChild(calGrid);
     gridContainer.appendChild(monthWrapper);
     
-    // Update the status pill
-    const statusPill = document.getElementById('status-pill');
-    if (statusPill) statusPill.innerText = "Միայն բացված օրերն են հասանելի";
+    // Update the status pil
 }
 
 // Function to handle the button clicks
@@ -329,7 +327,6 @@ function renderPolls() {
     pollsView.innerHTML = `
         <header class="page-header">
             <h1 class="header-gradient">Հարց և Պատասխան</h1>
-            <p>Մեր ժամանակների ամենակարևոր հարցերի պատասխանները:</p>
         </header>
 
         <div class="debate-section">
