@@ -18,9 +18,9 @@
 
     <!-- Top Navigation (Visible after login) -->
     <nav id="nav-bar" class="hidden">
-        <button class="nav-btn active" id="nav-home" onclick="showView('home')">Main Page</button>
-        <button class="nav-btn" id="nav-milestones" onclick="showView('milestones')">Calendar</button>
-        <button class="nav-btn" id="nav-polls" onclick="showView('polls')">Q&A</button>
+        <button class="nav-btn active" id="nav-home" onclick="showView('home')">Գլխավոր Էջ</button>
+        <button class="nav-btn" id="nav-milestones" onclick="showView('milestones')">Օրացույց</button>
+        <button class="nav-btn" id="nav-polls" onclick="showView('polls')">Հարց/Պատասխան</button>
     </nav>
 
     <!-- Login Screen -->
@@ -29,7 +29,7 @@
             <h1 class="header-gradient">The Journey</h1>
             <div class="input-group">
                 <input type="password" id="password-input" placeholder="Password..." autocomplete="current-password">
-                <button class="primary-btn" id="login-button" onclick="checkPassword()">Login</button>
+                <button class="primary-btn" id="login-button" onclick="checkPassword()">Մուտք</button>
             </div>
             <p id="error-msg" class="error-text"></p>
         </div>
@@ -41,8 +41,8 @@
         <!-- PAGE 1: CONNECTION (HOME) -->
         <div id="home-view" class="view-container">
             <div class="distance-header">
-                <p class="distance-label">LIVE DISTANCE</p>
-                <h2 id="live-distance">Calculating...</h2>
+                <p class="distance-label">LIVE Հեռավորություն</p>
+                <h2 id="live-distance">Հաշվարկում...</h2>
                 <div class="distance-line"><span>✈</span></div>
             </div>
 
@@ -50,8 +50,8 @@
                 <!-- Vancouver Card -->
                 <div class="glass-panel clock-card" id="vancouver-card">
                     <div class="location-info">
-                        <h3>Vancouver, BC</h3>
-                        <p class="country-label">Canada</p>
+                        <h3>Վանկուվեր</h3>
+                        <p class="country-label">Կանադա</p>
                     </div>
                     
                     <!-- Weather Video Animation -->
@@ -61,17 +61,17 @@
 
                     <div class="weather-brief">
                         <span id="vancouver-temp">--°C</span>
-                        <span id="vancouver-desc">Loading...</span>
+                        <span id="vancouver-desc">Բեռնվում է...</span>
                     </div>
                     <div class="big-time" id="vancouver-time">00:00:00</div>
-                    <div class="big-date" id="vancouver-date">Date</div>
+                    <div class="big-date" id="vancouver-date">Ամսաթիվ</div>
                 </div>
 
                 <!-- Goris Card -->
                 <div class="glass-panel clock-card" id="goris-card">
                     <div class="location-info">
-                        <h3>Goris</h3>
-                        <p class="country-label">Armenia</p>
+                        <h3>Գորիս</h3>
+                        <p class="country-label">Հայաստան</p>
                     </div>
 
                     <!-- Weather Video Animation -->
@@ -81,10 +81,10 @@
 
                     <div class="weather-brief">
                         <span id="goris-temp">--°C</span>
-                        <span id="goris-desc">Loading...</span>
+                        <span id="goris-desc">Բեռնվում է...</span>
                     </div>
                     <div class="big-time" id="goris-time">00:00:00</div>
-                    <div class="big-date" id="goris-date">Date</div>
+                    <div class="big-date" id="goris-date">Ամսաթիվ</div>
                 </div>
             </div>
         </div>
@@ -101,7 +101,7 @@
         <!-- PAGE 3: POLLS (GREAT DEBATE) -->
         <div id="polls-view" class="view-container hidden">
             <header class="page-header">
-                <h1 class="header-gradient">Questions and Answers</h1>
+                <h1 class="header-gradient">Հարց և Պատասխան</h1>
                 <p>Settling the most important questions of our time.</p>
             </header>
             <div class="calendar-grid" id="polls-grid"></div>
@@ -137,7 +137,7 @@
                 <svg class="volume-icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.26 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
             </div>
 
-            <button class="suggest-music-btn" onclick="suggestMusic()">Suggest a Track</button>
+            <button class="suggest-music-btn" onclick="suggestMusic()">Առաջարկել երգ</button>
         </div>
         <audio id="audio-element"></audio>
     </div>
