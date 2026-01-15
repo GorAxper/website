@@ -140,7 +140,7 @@ function calculateLiveDistance() {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     const d = R * c; 
     const distEl = document.getElementById('live-distance');
-    if (distEl) distEl.innerText = `${d.toLocaleString(undefined, {maximumFractionDigits: 2})} ԿՄ`;
+    if (distEl) distEl.innerText = `${d.toLocaleString(undefined, {maximumFractionDigits: 2})} ԿՄc`;
 }
 
 function updateWeatherAndClocks() {
@@ -423,7 +423,7 @@ function openPollCreator() {
     if (modal && modalBody) {
         modalBody.innerHTML = `
             <div style="padding: 10px; text-align: left;">
-                <h2 class="header-gradient" style="margin-bottom: 20px; text-align: center;">Create New Card</h2>
+                <h2 class="header-gradient" style="margin-bottom: 20px; text-align: center;">Ստեղծել նոր հարց</h2>
                 <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">ՀԱՐՑ (Առավելագույնը 50 տառ)</label>
                 <input type="text" id="new-poll-q" maxlength="50" placeholder="Օրինակ՝ Սիրելի եղանակը" style="width: 100%; margin: 8px 0 20px;">
                 <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">ՏԱՐԲԵՐԱԿՆԵՐ (Առնվազն 2)</label>
