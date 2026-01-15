@@ -2,9 +2,9 @@
 
 :root {
     --deep-navy: #051937;
-    --terracotta: #FA6868;
-    --peach: #b06085;
-    --dusty-purple: #b06085;
+    --terracotta: #4A5A6A;
+    --peach: #4A5A6A;
+    --dusty-purple: #4A5A6A;
     --cream-bg: #FFF8F0;
     --white: #ffffff;
     --border-soft: rgba(5, 25, 55, 0.1);
@@ -41,7 +41,7 @@ body {
 h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
 
 .header-gradient {
-    background: linear-gradient(90deg, #FA6868, #b06085);
+    background: linear-gradient(90deg, #4A5A6A, #3e5164);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));

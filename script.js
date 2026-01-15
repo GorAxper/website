@@ -140,7 +140,7 @@ function calculateLiveDistance() {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     const d = R * c; 
     const distEl = document.getElementById('live-distance');
-    if (distEl) distEl.innerText = `${d.toLocaleString(undefined, {maximumFractionDigits: 2})} ԿՄc`;
+    if (distEl) distEl.innerText = `${d.toLocaleString(undefined, {maximumFractionDigits: 2})} ԿՄ`;
 }
 
 function updateWeatherAndClocks() {
