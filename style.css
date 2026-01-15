@@ -414,15 +414,30 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
 .poll-btn:hover { background: var(--cream-bg); border-color: var(--terracotta); transform: scale(1.02); }
 
 /* --- MUSIC PLAYER --- */
+/* --- ENHANCED MUSIC PLAYER --- */
 #music-container {
     position: fixed;
     bottom: 25px;
     right: 25px;
     z-index: 2000;
     width: 320px;
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    overflow: hidden;
-    border-bottom: 4px solid var(--terracotta);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-bottom: 5px solid var(--terracotta);
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#music-container.folded .music-body, 
+#music-container.folded .track-title,
+#music-container.folded .suggest-music-btn,
+#music-container.folded .volume-container {
+    display: none !important; /* Forces these elements to vanish */
+    opacity: 0;
+    pointer-events: none;
 }
 
 #music-container.folded {
@@ -430,92 +445,207 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
     height: 60px;
     border-radius: 50%;
     padding: 0;
+    overflow: hidden; /* Prevents buttons from "peeking" out of the circle */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+#music-container.folded .music-header {
+    padding: 0;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Ensure the fold icon is centered when the player is a circle */
+#music-container.folded #fold-icon {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
 .music-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
     cursor: pointer;
+    gap: 12px;
 }
 
-.music-body {
-    padding: 0 20px 20px 20px;
-    text-align: center;
+#fold-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
 }
 
-#music-container.folded .music-body, 
-#music-container.folded .suggest-music-btn,
-#music-container.folded .track-title,
-#music-container.folded .fold-toggle-hint {
-    display: none;
+#music-container:not(.folded) #fold-icon {
+    transform: rotate(180deg);
 }
 
 .track-title {
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: var(--dusty-purple);
-    text-transform: uppercase;
-    margin-bottom: 15px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--deep-navy);
+    letter-spacing: 0.5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    letter-spacing: 0.5px;
+    flex-grow: 1;
 }
 
-.fold-toggle-hint { font-size: 0.8rem; opacity: 0.3; transition: 0.3s; }
-.music-header:hover .fold-toggle-hint { opacity: 0.8; }
+/* Control Buttons Styling */
+.music-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    align-items: center;
+    margin: 10px 0 20px;
+}
 
-.music-controls { display: flex; justify-content: center; gap: 20px; align-items: center; margin-bottom: 15px; }
-.music-controls button { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--deep-navy); transition: 0.2s; }
-.music-controls button:hover { color: var(--terracotta); transform: scale(1.1); }
+.control-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.control-btn svg {
+    fill: var(--deep-navy);
+    width: 22px;
+    height: 22px;
+}
+
+.control-btn:hover {
+    background: rgba(250, 104, 104, 0.1);
+    transform: scale(1.1);
+}
+
+.control-btn:hover svg {
+    fill: var(--terracotta);
+}
+
+/* Main Play Button Circle */
+#play-btn {
+    background: var(--deep-navy);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+
+#play-btn svg {
+    fill: white;
+    width: 20px;
+    height: 20px;
+}
+
+#play-btn:hover {
+    background: var(--terracotta);
+    box-shadow: 0 4px 15px rgba(250, 104, 104, 0.4);
+}
+
+/* Suggestion Button UI */
+.suggest-music-btn {
+    width: 100%;
+    margin-top: 10px;
+    background: transparent;
+    border: 1px dashed var(--terracotta);
+    color: var(--terracotta);
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px;
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+.suggest-music-btn:hover {
+    background: var(--terracotta);
+    color: white;
+}
 
 /* Volume Slider Styles */
 .volume-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 15px;
-    opacity: 0.8;
+    gap: 12px;
+    margin: 20px auto; /* Centered with more breathing room */
+    width: 70%;        /* Constrains the length of the slider */
 }
 
-.volume-container span { font-size: 0.8rem; }
+.volume-icon {
+    width: 14px;
+    height: 14px;
+    fill: var(--deep-navy);
+    opacity: 0.4;
+    flex-shrink: 0;
+}
 
 #volume-control {
-    width: 100px;
-    height: 4px;
-    background: #eee;
-    border-radius: 2px;
-    outline: none;
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent; /* Removes default background */
+    cursor: pointer;
 }
 
+/* The "Path" Line - Chrome/Safari/Edge */
+#volume-control::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 2px;           /* Makes the background a thin line */
+    background: rgba(5, 25, 55, 0.1); 
+    border-radius: 2px;
+}
+
+/* The Draggable Knob - Chrome/Safari/Edge */
 #volume-control::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 12px;
     height: 12px;
-    background: var(--terracotta);
+    width: 12px;
     border-radius: 50%;
+    background: var(--terracotta);
     cursor: pointer;
-    border: none;
+    margin-top: -5px;      /* Centers the knob on the 2px line */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    border: 2px solid white;
+    transition: transform 0.2s ease;
 }
 
+/* Hover effect for the knob */
+#volume-control:hover::-webkit-slider-thumb {
+    transform: scale(1.2);
+    background: var(--deep-navy);
+}
+
+/* --- CENTERED SUGGEST MUSIC BUTTON --- */
 .suggest-music-btn {
-    margin-top: 5px;
+    width: auto;           /* Removes the 100% width */
+    min-width: 150px;      /* Keeps it substantial but not full-width */
+    margin: 10px auto 10px; /* Centers the button horizontally */
+    display: block;        /* Necessary for the margin:auto to work */
+    padding: 10px 20px;
     font-size: 0.7rem;
-    background: var(--peach);
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 700;
+    background: #c3d3e9;
+    border: 1px solid var(--border-soft);
+    border-radius: 50px;   
     color: var(--deep-navy);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
 }
 
+.suggest-music-btn:hover {
+    background: var(--deep-navy);
+    color: white;
+    border-color: var(--deep-navy);
+    transform: translateY(-2px);
+}
 /* --- UTILS --- */
 .lock-icon { width: 38px; height: 38px; margin-bottom: 12px; fill: #bdc3c7; }
 .available .lock-icon { fill: var(--terracotta); }

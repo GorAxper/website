@@ -205,31 +205,7 @@ function updateWeatherUI(city, data) {
             videoEl.play().catch(() => {});
         }
     }
-    
-    if (city === 'goris') applyWeatherEffect(data.weathercode);
-}
 
-function applyWeatherEffect(code) {
-    const overlay = document.getElementById('weather-effect-overlay');
-    if (!overlay) return;
-    overlay.innerHTML = '';
-    
-    if (code >= 61 && code <= 65) { 
-        for(let i=0; i<50; i++) {
-            const drop = document.createElement('div');
-            drop.className = 'rain-drop';
-            drop.style.left = Math.random() * 100 + 'vw';
-            overlay.appendChild(drop);
-        }
-    } else if (code >= 71 && code <= 77) {
-        for(let i=0; i<30; i++) {
-            const flake = document.createElement('div');
-            flake.className = 'snowflake';
-            flake.innerText = '❄';
-            flake.style.left = Math.random() * 100 + 'vw';
-            overlay.appendChild(flake);
-        }
-    }
 }
 
 // 5. PAGE 2 LOGIC: ARCHIVES
@@ -496,12 +472,14 @@ function updateTrackInfo() {
 
 function togglePlay() {
     if (!audio) return;
+    const playBtn = document.getElementById('play-btn');
+    
     if (audio.paused) { 
         audio.play().catch(e => {}); 
-        if (playBtn) playBtn.innerText = "⏸"; 
+        playBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`; // Pause Icon
     } else { 
         audio.pause(); 
-        if (playBtn) playBtn.innerText = "▶"; 
+        playBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`; // Play Icon
     }
 }
 
@@ -510,7 +488,7 @@ function changeTrack(d) {
     updateTrackInfo(); 
     if (audio) { 
         audio.play().catch(() => {}); 
-        if (playBtn) playBtn.innerText = "⏸"; 
+        document.getElementById('play-btn').innerHTML = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
     }
 }
 
@@ -538,17 +516,28 @@ function suggestMusic() {
 
 function submitMusicSuggestion() {
     const input = document.getElementById('music-suggestion-input');
-    const val = input ? input.value : "";
-    if (val.trim()) {
+    const val = input ? input.value.trim() : "";
+
+    if (val) {
+        // Save to Firebase under 'music_suggestions'
+        database.ref(`debate_cards/${ROOM_ID}/music_suggestions`).push({
+            suggestion: val,
+            timestamp: Date.now(),
+            date: new Date().toLocaleString()
+        });
+
+        // Show Success Message
         const modalBody = document.getElementById('modal-body');
         modalBody.innerHTML = `
             <div style="padding: 20px;">
-                <h2 class="header-gradient" style="margin-bottom: 15px;">Got it!</h2>
-                <p style="margin-bottom: 25px;">"${val}" has been added to our shared list. 🎧</p>
+                <h2 class="header-gradient" style="margin-bottom: 15px;">Sent!</h2>
+                <p style="margin-bottom: 25px;">"${val}" has been added to the secret list. 🎧</p>
                 <button class="nav-btn active" onclick="closeModal()" style="width: 100%; padding: 15px;">Close</button>
             </div>
         `;
-    } else { closeModal(); }
+    } else { 
+        closeModal(); 
+    }
 }
 
 function openModal(d) {
