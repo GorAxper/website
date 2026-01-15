@@ -2,10 +2,10 @@
 
 :root {
     --deep-navy: #051937;
-    --terracotta: #4A5A6A;
-    --peach: #4A5A6A;
-    --dusty-purple: #4A5A6A;
-    --cream-bg: #FFF8F0;
+    --terracotta: #1c52a4;
+    --peach: #1b6291;
+    --dusty-purple: #1c60a4;
+    --cream-bg: #f4f4f4;
     --white: #ffffff;
     --border-soft: rgba(5, 25, 55, 0.1);
     --shadow-rich: 0 15px 40px rgba(5, 25, 55, 0.08);
@@ -41,7 +41,7 @@ body {
 h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
 
 .header-gradient {
-    background: linear-gradient(90deg, #4A5A6A, #3e5164);
+    background: linear-gradient(90deg, #3d4696, #232855);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
@@ -253,7 +253,7 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
     margin-bottom: 0;
     font-size: 1.6rem;
     font-weight: 900;
-    background: linear-gradient(90deg, #FA6868, #b06085);
+    background: linear-gradient(90deg, #3d4696, #232855);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
