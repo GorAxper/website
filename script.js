@@ -325,9 +325,6 @@ function renderPolls() {
     if (!pollsView) return;
 
     pollsView.innerHTML = `
-        <header class="page-header">
-            <h1 class="header-gradient">Հարց և Պատասխան</h1>
-        </header>
 
         <div class="debate-section">
             <h2 class="section-title header-gradient separable-header" style="margin: 40px 0 30px; font-size: 1.8rem;">
