@@ -76,7 +76,7 @@ function checkPassword() {
         togglePlay(); 
     } else {
         const error = document.getElementById('error-msg');
-        error.innerText = "Incorrect Code.";
+        error.innerText = "Սխալ գաղտնաբառ:";
         setTimeout(() => error.innerText = "", 3000);
     }
 }
@@ -140,22 +140,31 @@ function calculateLiveDistance() {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     const d = R * c; 
     const distEl = document.getElementById('live-distance');
-    if (distEl) distEl.innerText = `${d.toLocaleString(undefined, {maximumFractionDigits: 2})} KM`;
+    if (distEl) distEl.innerText = `${d.toLocaleString(undefined, {maximumFractionDigits: 2})} ԿՄ`;
 }
 
 function updateWeatherAndClocks() {
-    const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-    const optionsDate = { weekday: 'long', month: 'long', day: 'numeric' };
+    const daysHy = ["Կիրակի", "Երկուշաբթի", "Երեքշաբթի", "Չորեքշաբթի", "Հինգշաբթի", "Ուրբաթ", "Շաբաթ"];
+    const monthsHy = ["Հունվարի", "Փետրվարի", "Մարտի", "Ապրիլի", "Մայիսի", "Հունիսի", "Հուլիսի", "Օգոստոսի", "Սեպտեմբերի", "Հոկտեմբերի", "Նոյեմբերի", "Դեկտեմբերի"];
 
+    const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+
+    function getArmenianDate(tz) {
+        const now = new Date(new Date().toLocaleString("en-US", {timeZone: tz}));
+        return `${daysHy[now.getDay()]}, ${monthsHy[now.getMonth()]} ${now.getDate()}`;
+    }
+
+    // Vancouver
     const vanTimeEl = document.getElementById('vancouver-time');
     const vanDateEl = document.getElementById('vancouver-date');
     if (vanTimeEl) vanTimeEl.innerText = new Intl.DateTimeFormat('en-US', { ...optionsTime, timeZone: 'America/Vancouver' }).format(new Date());
-    if (vanDateEl) vanDateEl.innerText = new Intl.DateTimeFormat('en-US', { ...optionsDate, timeZone: 'America/Vancouver' }).format(new Date());
+    if (vanDateEl) vanDateEl.innerText = getArmenianDate('America/Vancouver');
 
+    // Goris
     const gorTimeEl = document.getElementById('goris-time');
     const gorDateEl = document.getElementById('goris-date');
     if (gorTimeEl) gorTimeEl.innerText = new Intl.DateTimeFormat('en-US', { ...optionsTime, timeZone: 'Asia/Yerevan' }).format(new Date());
-    if (gorDateEl) gorDateEl.innerText = new Intl.DateTimeFormat('en-US', { ...optionsDate, timeZone: 'Asia/Yerevan' }).format(new Date());
+    if (gorDateEl) gorDateEl.innerText = getArmenianDate('Asia/Yerevan');
 }
 
 async function fetchLiveWeather() {
@@ -176,25 +185,46 @@ function updateWeatherUI(city, data) {
     const descEl = document.getElementById(`${city}-desc`);
     const videoEl = document.getElementById(`${city}-weather-video`);
     
+    // Comprehensive Armenian Weather Mapping
     const codeMap = { 
-        0: "Clear Sky", 1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast", 
-        45: "Foggy", 48: "Foggy", 
-        51: "Drizzle", 53: "Drizzle", 55: "Drizzle",
-        61: "Rainy", 63: "Rainy", 65: "Rainy",
-        71: "Snowy", 73: "Snowy", 75: "Snowy",
-        95: "Thunderstorm" 
+        0: "Պարզ երկինք", 
+        1: "Հիմնականում պարզ", 
+        2: "Մասնակի ամպամած", 
+        3: "Ամպամած", 
+        45: "Մառախուղ", 
+        48: "Մառախուղ", 
+        51: "Շաղբի", 53: "Շաղբի", 55: "Շաղբի",
+        61: "Անձրև", 63: "Անձրև", 65: "Անձրև",
+        71: "Ձյուն", 73: "Ձյուն", 75: "Ձյուն", 77: "Ձյան փաթիլներ",
+        80: "Անձրևային տեղումներ", 81: "Անձրևային տեղումներ", 82: "Անձրևային տեղումներ",
+        85: "Ձյունոտ տեղումներ", 86: "Ձյունոտ տեղումներ",
+        95: "Ամպրոպ" 
     };
     
     if (tempEl) tempEl.innerText = `${data.temperature}°C`;
-    if (descEl) descEl.innerText = codeMap[data.weathercode] || "Clear";
+    
+    // Set text description (Defaults to "Պարզ" only if code is unknown)
+    const weatherText = codeMap[data.weathercode] || "Պարզ";
+    if (descEl) descEl.innerText = weatherText;
     
     if (videoEl) {
         let weatherType = 'clear';
-        if (data.weathercode >= 1 && data.weathercode <= 3) weatherType = 'cloudy';
-        else if (data.weathercode >= 45 && data.weathercode <= 48) weatherType = 'fog';
-        else if (data.weathercode >= 51 && data.weathercode <= 65) weatherType = 'rain';
-        else if (data.weathercode >= 71 && data.weathercode <= 77) weatherType = 'snow';
-        else if (data.weathercode >= 95) weatherType = 'storm';
+        const code = data.weathercode;
+
+        // Sync video logic with the codeMap ranges
+        if (code >= 1 && code <= 3) {
+            weatherType = 'cloudy';
+        } else if (code === 45 || code === 48) {
+            weatherType = 'fog';
+        } else if ((code >= 51 && code <= 65) || (code >= 80 && code <= 82)) {
+            weatherType = 'rain';
+        } else if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) {
+            weatherType = 'snow';
+        } else if (code >= 95) {
+            weatherType = 'storm';
+        } else {
+            weatherType = 'clear'; // This handles code 0
+        }
 
         const folder = city === 'vancouver' ? 'dynamic/Vancouver' : 'dynamic/Goris';
         const newSrc = `${folder}/${weatherType}.mp4`;
@@ -205,7 +235,6 @@ function updateWeatherUI(city, data) {
             videoEl.play().catch(() => {});
         }
     }
-
 }
 
 // 5. PAGE 2 LOGIC: ARCHIVES
@@ -215,15 +244,17 @@ function generateGrid() {
     const gridContainer = document.getElementById('calendar-grid');
     if (!gridContainer) return;
     
-    // Clear container and setup the Navigation Header
     gridContainer.innerHTML = "";
     gridContainer.className = ""; 
 
+    const monthsFullHy = ["Հունվար", "Փետրվար", "Մարտ", "Ապրիլ", "Մայիս", "Հունիս", "Հուլիս", "Օգոստոս", "Սեպտեմբեր", "Հոկտեմբեր", "Նոյեմբեր", "Դեկտեմբեր"];
+    
     const year = currentDisplayDate.getFullYear();
     const month = currentDisplayDate.getMonth();
-    const monthName = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDisplayDate);
+    
+    // Manual Armenian Month Title
+    const monthName = `${monthsFullHy[month]}  ${year}`;
 
-    // 1. Create Navigation Bar
     const navWrapper = document.createElement('div');
     navWrapper.className = "calendar-nav-bar";
     navWrapper.innerHTML = `
@@ -233,15 +264,13 @@ function generateGrid() {
     `;
     gridContainer.appendChild(navWrapper);
 
-    // 2. Create Calendar Grid
     const monthWrapper = document.createElement('div');
     monthWrapper.className = "milestone-calendar-wrapper";
-
     const calGrid = document.createElement('div');
     calGrid.className = "milestone-calendar-grid";
 
-    // Weekday Headers
-    ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(day => {
+    // Armenian Short Weekdays
+    ['Կիր', 'Երկ', 'Երք', 'Չրք', 'Հնգ', 'Ուրբ', 'Շբթ'].forEach(day => {
         calGrid.innerHTML += `<div class="calendar-day-header">${day}</div>`;
     });
 
@@ -283,7 +312,7 @@ function generateGrid() {
     
     // Update the status pill
     const statusPill = document.getElementById('status-pill');
-    if (statusPill) statusPill.innerText = "Only Gift Days are Unlocked";
+    if (statusPill) statusPill.innerText = "Միայն բացված օրերն են հասանելի";
 }
 
 // Function to handle the button clicks
@@ -299,20 +328,20 @@ function renderPolls() {
 
     pollsView.innerHTML = `
         <header class="page-header">
-            <h1 class="header-gradient">Questions and Answers</h1>
-            <p>Settling the most important questions of our time.</p>
+            <h1 class="header-gradient">Հարց և Պատասխան</h1>
+            <p>Մեր ժամանակների ամենակարևոր հարցերի պատասխանները:</p>
         </header>
 
         <div class="debate-section">
             <h2 class="section-title header-gradient separable-header" style="margin: 40px 0 30px; font-size: 1.8rem;">
-                <span>Gor</span>
+                <span>Գոռ</span>
             </h2>
             <div class="calendar-grid" id="gor-grid"></div>
         </div>
 
         <div class="debate-section">
             <h2 class="section-title header-gradient separable-header" style="margin: 60px 0 30px; font-size: 1.8rem;">
-                <span>Ani</span>
+                <span>Անի</span>
             </h2>
             <div class="calendar-grid" id="ani-grid"></div>
         </div>
@@ -395,14 +424,14 @@ function openPollCreator() {
         modalBody.innerHTML = `
             <div style="padding: 10px; text-align: left;">
                 <h2 class="header-gradient" style="margin-bottom: 20px; text-align: center;">Create New Card</h2>
-                <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">QUESTION (Max 50 chars)</label>
-                <input type="text" id="new-poll-q" maxlength="50" placeholder="e.g. Favorite Season?" style="width: 100%; margin: 8px 0 20px;">
-                <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">OPTIONS (At least 2)</label>
-                <input type="text" class="new-poll-opt" placeholder="Option 1" style="width: 100%; margin: 8px 0;">
-                <input type="text" class="new-poll-opt" placeholder="Option 2" style="width: 100%; margin: 8px 0;">
-                <input type="text" class="new-poll-opt" placeholder="Option 3 (Optional)" style="width: 100%; margin: 8px 0;">
-                <input type="text" class="new-poll-opt" placeholder="Option 4 (Optional)" style="width: 100%; margin: 8px 0 25px;">
-                <button class="nav-btn active" onclick="saveNewPoll()" style="width: 100%; padding: 15px;">Create Card</button>
+                <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">ՀԱՐՑ (Առավելագույնը 50 տառ)</label>
+                <input type="text" id="new-poll-q" maxlength="50" placeholder="Օրինակ՝ Սիրելի եղանակը" style="width: 100%; margin: 8px 0 20px;">
+                <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">ՏԱՐԲԵՐԱԿՆԵՐ (Առնվազն 2)</label>
+                <input type="text" class="new-poll-opt" placeholder="Տարբերակ 1" style="width: 100%; margin: 8px 0;">
+                <input type="text" class="new-poll-opt" placeholder="Տարբերակ 2" style="width: 100%; margin: 8px 0;">
+                <input type="text" class="new-poll-opt" placeholder="Տարբերակ 3 (Ըստ ցանկության)" style="width: 100%; margin: 8px 0;">
+                <input type="text" class="new-poll-opt" placeholder="Տարբերակ 4 (Ըստ ցանկության)" style="width: 100%; margin: 8px 0 25px;">
+                <button class="nav-btn active" onclick="saveNewPoll()" style="width: 100%; padding: 15px;">Ստեղծել</button>
             </div>
         `;
         modal.classList.remove('hidden');
@@ -414,8 +443,8 @@ function saveNewPoll() {
     const optInputs = document.querySelectorAll('.new-poll-opt');
     const options = Array.from(optInputs).map(i => i.value.trim()).filter(v => v !== "");
 
-    if (q.length < 3) { alert("Please enter a valid question."); return; }
-    if (options.length < 2) { alert("Please enter at least two options."); return; }
+    if (q.length < 3) { alert("Խնդրում ենք մուտքագրել վավեր հարց:"); return; }
+    if (options.length < 2) { alert("Խնդրում ենք մուտքագրել առնվազն երկու տարբերակ։"); return; }
 
     const newPoll = { q, options };
     // Firebase real-time push
@@ -433,9 +462,9 @@ function vote(id, choice) {
     if (modal && modalBody) {
         modalBody.innerHTML = `
             <div style="padding: 20px;">
-                <h2 class="header-gradient" style="margin-bottom: 20px;">Choice Recorded!</h2>
-                <p style="font-size: 1.1rem; margin-bottom: 25px;">You selected: <strong>${choice}</strong></p>
-                <button class="nav-btn active" onclick="closeModal()" style="width: 100%; padding: 15px;">Perfect</button>
+                <h2 class="header-gradient" style="margin-bottom: 20px;">Ընտրությունը գրանցված է</h2>
+                <p style="font-size: 1.1rem; margin-bottom: 25px;">Դուք ընտրեցիք՝ <strong>${choice}</strong></p>
+                <button class="nav-btn active" onclick="closeModal()" style="width: 100%; padding: 15px;">Փակել</button>
             </div>
         `;
         modal.classList.remove('hidden');
@@ -503,10 +532,10 @@ function suggestMusic() {
     if (modal && modalBody) {
         modalBody.innerHTML = `
             <div style="padding: 10px;">
-                <h2 class="header-gradient" style="margin-bottom: 15px;">Suggest a Track</h2>
-                <p style="margin-bottom: 20px; opacity: 0.8;">What should be on our shared playlist?</p>
-                <input type="text" id="music-suggestion-input" placeholder="Artist - Song Title" style="width: 100%; margin-bottom: 25px;">
-                <button class="nav-btn active" onclick="submitMusicSuggestion()" style="width: 100%; padding: 15px;">Submit Suggestion</button>
+                <h2 class="header-gradient" style="margin-bottom: 15px;">Առաջարկել երգ</h2>
+                <p style="margin-bottom: 20px; opacity: 0.8;">Ի՞նչ երգ պետք է լինի ընդհանուր փլեյլիստում:</p>
+                <input type="text" id="music-suggestion-input" placeholder="Արտիստ - Երգի վերնագիր" style="width: 100%; margin-bottom: 25px;">
+                <button class="nav-btn active" onclick="submitMusicSuggestion()" style="width: 100%; padding: 15px;">Ուղարկել ընտրությունը</button>
             </div>
         `;
         modal.classList.remove('hidden');
@@ -530,9 +559,9 @@ function submitMusicSuggestion() {
         const modalBody = document.getElementById('modal-body');
         modalBody.innerHTML = `
             <div style="padding: 20px;">
-                <h2 class="header-gradient" style="margin-bottom: 15px;">Sent!</h2>
-                <p style="margin-bottom: 25px;">"${val}" has been added to the secret list. 🎧</p>
-                <button class="nav-btn active" onclick="closeModal()" style="width: 100%; padding: 15px;">Close</button>
+                <h2 class="header-gradient" style="margin-bottom: 15px;">Ուղարկված է!</h2>
+                <p style="margin-bottom: 25px;">"${val}"-ը ավելացվել է գաղտնի ցանկում։ 🎧</p>
+                <button class="nav-btn active" onclick="closeModal()" style="width: 100%; padding: 15px;">Փակել</button>
             </div>
         `;
     } else { 
