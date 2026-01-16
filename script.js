@@ -18,7 +18,7 @@ const PLAYLIST = [
 ];
 
 const GOR_POLLS = [
-    { q: "Ո՞րն է քո ամենասիրելի հիշողությունը:", isOpenEnded: true }
+    { q: "Ո՞րն է բանալին:", isOpenEnded: true }
 ];
 
 const GIFT_DAYS = [
