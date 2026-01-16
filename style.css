@@ -372,7 +372,6 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
 }
 
 .box {
-    aspect-ratio: 1 / 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -383,21 +382,72 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
+    /* Removed aspect-ratio from here to allow flexibility */
+}
+
+/* Specific Poll Card Adjustments */
+.poll-card {
+    min-height: 340px;
+    height: auto;
+    aspect-ratio: auto;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
+    gap: 20px; 
+    text-align: center;
+}
+
+/* Question styling with wrapping */
+.poll-question {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--deep-navy);
+    line-height: 1.5;
+    width: 100%;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+/* Scrollable Answer Container */
+.user-answer-display {
+    background: rgba(107, 63, 105, 0.05);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px dashed var(--terracotta);
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.user-answer-text {
+    color: var(--terracotta);
+    font-size: 1rem;
+    display: block;
+    word-wrap: break-word;
+    word-break: break-word;
+    /* The Scroll Effect */
+    max-height: 120px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Custom scrollbar for a cleaner look */
+.user-answer-text::-webkit-scrollbar {
+    width: 4px;
+}
+.user-answer-text::-webkit-scrollbar-thumb {
+    background: var(--terracotta);
+    border-radius: 10px;
 }
 
 .box.locked { opacity: 0.5; cursor: not-allowed; }
 .box.available { border: 1.5px solid var(--peach); cursor: pointer; }
 .box.available:hover { transform: translateY(-10px); border-color: var(--terracotta); box-shadow: var(--shadow-rich); }
 
-.poll-card {
-    aspect-ratio: auto;
-    min-height: 220px;
-    padding: 25px;
-    justify-content: flex-start;
-    text-align: center;
-}
+/* FIX: Open-ended question text overflow */
 
-.poll-question { font-weight: 700; margin-bottom: 15px; font-size: 0.95rem; color: var(--dusty-purple); line-height: 1.4; }
 .poll-btn {
     width: 100%;
     padding: 12px;
