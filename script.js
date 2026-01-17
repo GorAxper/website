@@ -594,20 +594,36 @@ function runWelcomeQuote() {
 
     const text = "This is a space where your words are always welcome. Speak, whisper, or simply leave a thought - I am here, listening, always.";
     
-    // Split text into characters
-    const characters = text.split("");
-    
-    characters.forEach((char, index) => {
-        const span = document.createElement('span');
-        // Handle spaces so they don't collapse
-        span.innerText = char === " " ? "\u00A0" : char; 
-        span.className = 'char';
-        // Delay each character slightly to create the typewriter sequence
-        span.style.animationDelay = `${index * 0.025}s`; 
-        quoteContainer.appendChild(span);
+    // Split into words
+    const words = text.split(" ");
+    let charIndex = 0;
+
+    words.forEach((word) => {
+        // Create a span for each word to keep it together
+        const wordSpan = document.createElement('span');
+        wordSpan.style.whiteSpace = "nowrap"; 
+        wordSpan.style.display = "inline-block";
+
+        // Split word into characters
+        const chars = word.split("");
+        chars.forEach((char) => {
+            const span = document.createElement('span');
+            span.innerText = char;
+            span.className = 'char';
+            span.style.animationDelay = `${charIndex * 0.025}s`; 
+            wordSpan.appendChild(span);
+            charIndex++;
+        });
+
+        quoteContainer.appendChild(wordSpan);
+
+        // Add a space after the word
+        const space = document.createElement('span');
+        space.innerText = "\u00A0"; // Non-breaking space
+        quoteContainer.appendChild(space);
+        charIndex++;
     });
 }
-
 // 8. PARTICLE ENGINE
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas.getContext('2d');
