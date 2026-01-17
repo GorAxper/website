@@ -734,3 +734,9 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
     background: linear-gradient(to right, transparent, var(--terracotta), transparent);
     opacity: 0.4;
 }
+
+textarea:focus {
+    outline: none;
+    border-color: var(--terracotta);
+    box-shadow: 0 0 0 4px rgba(241, 141, 94, 0.1);
+}
