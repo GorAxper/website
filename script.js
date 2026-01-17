@@ -79,9 +79,9 @@ function startRealtimeSync() {
         const data = snapshot.val();
         if (data) {
             USER_VOTES = data.votes || {};
-            ANI_POLLS = data.custom_polls ? Object.values(data.custom_polls) : [];
-            // Sync Thoughts (ordered by newest first)
-            THOUGHTS = data.thoughts ? Object.values(data.thoughts).reverse() : [];
+            // Store with Firebase IDs for deletion
+            ANI_POLLS = data.custom_polls ? Object.entries(data.custom_polls).map(([id, val]) => ({...val, id})) : [];
+            THOUGHTS = data.thoughts ? Object.entries(data.thoughts).map(([id, val]) => ({...val, id})).reverse() : [];
         } else {
             USER_VOTES = {};
             ANI_POLLS = [];
@@ -293,8 +293,17 @@ function createPollCard(p, id, delay) {
     card.style.animationDelay = `${delay}s`;
     
     const existingVote = USER_VOTES[id];
-    let pollHTML = `<div class="poll-question">${p.q}</div>`;
+    let pollHTML = ``;
+
+    // 1. Add the delete button first if it's an Ani poll
+    if (id.startsWith('ani_')) {
+        pollHTML += `<span class="delete-btn" onclick="confirmDelete('custom_polls/${p.id}')">&times;</span>`;
+    }
+
+    // 2. Add the question
+    pollHTML += `<div class="poll-question">${p.q}</div>`;
     
+    // 3. Add the logic for answers
     if (existingVote) {
         pollHTML += `
             <div style="width: 100%;">
@@ -433,6 +442,7 @@ function renderThoughts() {
         const needsReadMore = t.text.length > 140; 
         
         card.innerHTML = `
+            <span class="delete-btn" onclick="confirmDelete('thoughts/${t.id}')">&times;</span>
             <div class="thought-header">
                 <div class="thought-author">${t.author}</div>
                 <div class="thought-date">${t.date}</div>
@@ -492,6 +502,44 @@ function saveNewThought() {
 
     database.ref(`debate_cards/${ROOM_ID}/thoughts`).push(newThought);
     closeModal();
+}
+
+let pendingDeletePath = null; // Track what we want to delete
+
+function confirmDelete(path) {
+    pendingDeletePath = path;
+    const modalBody = document.getElementById('modal-body');
+    const modal = document.getElementById('content-modal');
+    
+    if (modal && modalBody) {
+        modalBody.innerHTML = `
+            <div class="confirm-modal-content">
+                <div style="font-size: 3rem; margin-bottom: 10px;">🗑️</div>
+                <h2 class="confirm-modal-title">Ջնջե՞լ այս բաժինը</h2>
+                <p class="confirm-modal-text">Արդյո՞ք վստահ եք, որ ցանկանում եք ջնջել այս տարրը: Այս գործողությունը հնարավոր չէ չեղարկել:</p>
+                <div class="confirm-actions">
+                    <button class="confirm-btn confirm-btn-no" onclick="closeModal()">Չեղարկել</button>
+                    <button class="confirm-btn confirm-btn-yes" onclick="executeDelete()">Ջնջել</button>
+                </div>
+            </div>
+        `;
+        modal.classList.remove('hidden');
+    }
+}
+
+function executeDelete() {
+    if (pendingDeletePath) {
+        database.ref(`debate_cards/${ROOM_ID}/${pendingDeletePath}`).remove()
+            .then(() => {
+                console.log("Deleted successfully");
+                pendingDeletePath = null;
+                closeModal();
+            })
+            .catch(error => {
+                console.error("Delete failed:", error);
+                alert("Տեղի է ունեցել սխալ:");
+            });
+    }
 }
 
 // 8. PARTICLE ENGINE

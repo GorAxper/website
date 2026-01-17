@@ -818,3 +818,83 @@ textarea:focus {
     text-align: left;
     flex-shrink: 0; /* Keeps button at the bottom */
 }
+
+.delete-btn {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    font-size: 1.4rem;
+    color: #e74c3c;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 10;
+    opacity: 0.4;
+    transition: opacity 0.3s, transform 0.2s;
+    padding: 5px;
+}
+
+.delete-btn:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Ensure parents have relative positioning */
+.poll-card, .thought-card {
+    position: relative;
+}
+
+.confirm-modal-content {
+    padding: 20px;
+    text-align: center;
+}
+
+.confirm-modal-title {
+    font-size: 1.4rem;
+    font-weight: 900;
+    margin-bottom: 15px;
+    color: var(--deep-navy);
+}
+
+.confirm-modal-text {
+    font-size: 0.95rem;
+    color: var(--deep-navy);
+    opacity: 0.8;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.confirm-btn {
+    padding: 12px 25px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    border: none;
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.confirm-btn-yes {
+    background: #e74c3c;
+    color: white;
+}
+
+.confirm-btn-yes:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+}
+
+.confirm-btn-no {
+    background: var(--border-soft);
+    color: var(--deep-navy);
+}
+
+.confirm-btn-no:hover {
+    background: #ddd;
+}
