@@ -41,11 +41,12 @@ body {
 h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
 
 .header-gradient {
-    background: linear-gradient(90deg, #3d4696, #232855);
+    background: linear-gradient(90deg, #c86262, #9c4646);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
 }
+
 
 /* Updated Full Screen to be a fixed overlay for login */
 .full-screen { 
@@ -124,7 +125,6 @@ h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: upper
 
 /* Refined typography for Login */
 .login-card h1 {
-    margin-bottom: 10px;
     font-size: 2.5rem;
 }
 
@@ -253,7 +253,7 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
     margin-bottom: 0;
     font-size: 1.6rem;
     font-weight: 900;
-    background: linear-gradient(90deg, #3d4696, #232855);
+    background: linear-gradient(90deg, #3f3f3f, #090909);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -284,6 +284,10 @@ input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(241, 1
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 20px;
+}
+
+#calendar-grid {
+    margin-top: 20px;
 }
 
 .milestone-calendar-wrapper {
@@ -897,4 +901,49 @@ textarea:focus {
 
 .confirm-btn-no:hover {
     background: #ddd;
+}
+
+.section-title span {
+    color: black;
+    -webkit-text-fill-color: text;
+}
+
+/* Unique color for Ani's section header */
+.ani-header-gradient {
+    background: linear-gradient(90deg, #6e4f6e, #492a48); /* Soft Purple to Terracotta */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+}
+
+/* Ensure the lines on the side of Ani's header also match the new color */
+.ani-header-gradient.separable-header::before,
+.ani-header-gradient.separable-header::after {
+    background: linear-gradient(to right, transparent, #8D5F8C, transparent);
+    opacity: 0.5;
+}
+
+.welcome-quote {
+    margin: 0.7rem 0 0.9rem 0;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--deep-navy);
+    font-style: italic;
+    min-height: 4.5em;
+    opacity: 0.8;
+    text-align: center;
+}
+
+.char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(4px);
+    animation: charFadeIn 0.1s ease forwards;
+}
+
+@keyframes charFadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
