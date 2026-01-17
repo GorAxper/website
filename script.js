@@ -10,14 +10,15 @@ const END_DATE = new Date(2026, 11, 31);
 const INTERVAL_DAYS = 15;
 
 const PLAYLIST = [
+    { title: "Stephen Sanchez - Until I Found You", src: "music/Stephen Sanchez - Until I Found You.mp3" },
+    { title: "Arno Babajanyan - Elegia", src: "music/Arno Babajanyan - Elegia.mp3" },
+    { title: "Imany - You will never know", src: "music/Imany - You will never know.mp3" },
+    { title: "Charles Aznavour - She", src: "music/Charles Aznavour - She.mp3" },
     { title: "Tigran Mansuryan - Siro Meghedi", src: "music/Tigran Mansuryan - Siro Meghedi.mp3" },
     { title: "Lara Fabian - Je t'aime", src: "music/Lara Fabian - Je taime.mp3" },
-    { title: "Arno Babajanyan - Elegia", src: "music/Arno Babajanyan - Elegia.mp3" },
-    { title: "Charles Aznavour - She", src: "music/Charles Aznavour - She.mp3" },
-    { title: "Imany - You will never know", src: "music/Imany - You will never know.mp3" },
     { title: "Ludovico Einaudi - Una Mattina", src: "music/Ludovico Einaudi - Una Mattina.mp3" },
     { title: "Ed Sheeran - Perfect", src: "music/Ed Sheeran - Perfect.mp3" },
-    { title: "Stephen Sanchez - Until I Found You", src: "music/Stephen Sanchez - Until I Found You.mp3" },
+    
 ];
 
 const GOR_POLLS = [
@@ -267,11 +268,11 @@ function renderPolls() {
 
     pollsView.innerHTML = `
         <div class="debate-section">
-            <h2 class="section-title header-gradient separable-header" style="margin: 40px 0 30px; font-size: 1.8rem;"><span>Գոռ</span></h2>
+            <h2 class="section-title ani-header-gradient separable-header" style="margin: 60px 0 30px; font-size: 1.8rem;"><span>Գոռ</span></h2>
             <div class="calendar-grid" id="gor-grid"></div>
         </div>
         <div class="debate-section">
-            <h2 class="section-title header-gradient separable-header" style="margin: 60px 0 30px; font-size: 1.8rem;"><span>Անի</span></h2>
+            <h2 class="section-title ani-header-gradient separable-header" style="margin: 60px 0 30px; font-size: 1.8rem;"><span>Անի</span></h2>
             <div class="calendar-grid" id="ani-grid"></div>
         </div>
     `;
@@ -587,6 +588,26 @@ function submitMusicSuggestion() {
     }
 }
 
+function runWelcomeQuote() {
+    const quoteContainer = document.getElementById('welcome-quote');
+    if (!quoteContainer) return;
+
+    const text = "This is a space where your words are always welcome. Speak, whisper, or simply leave a thought - I am here, listening, always.";
+    
+    // Split text into characters
+    const characters = text.split("");
+    
+    characters.forEach((char, index) => {
+        const span = document.createElement('span');
+        // Handle spaces so they don't collapse
+        span.innerText = char === " " ? "\u00A0" : char; 
+        span.className = 'char';
+        // Delay each character slightly to create the typewriter sequence
+        span.style.animationDelay = `${index * 0.025}s`; 
+        quoteContainer.appendChild(span);
+    });
+}
+
 // 8. PARTICLE ENGINE
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas.getContext('2d');
@@ -605,10 +626,12 @@ function animateParticles() {
     });
     requestAnimationFrame(animateParticles);
 }
-initParticles(); animateParticles();
-window.onresize = initParticles;
-
+/* --- INITIALIZATION --- */
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Start the typewriter effect
+    runWelcomeQuote();
+
+    // 2. Setup the Enter key for login
     const passwordInput = document.getElementById('password-input');
     if (passwordInput) {
         passwordInput.addEventListener('keydown', (e) => { 
@@ -619,3 +642,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Ensure particles and logic are properly closed
+initParticles(); 
+animateParticles();
+window.onresize = initParticles;
