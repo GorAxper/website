@@ -740,3 +740,81 @@ textarea:focus {
     border-color: var(--terracotta);
     box-shadow: 0 0 0 4px rgba(241, 141, 94, 0.1);
 }
+
+.thought-card {
+    height: 320px; /* Rigid constant height */
+    display: flex;
+    flex-direction: column;
+    padding: 24px !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+    overflow: hidden;
+}
+
+.thought-header {
+    height: 55px; /* Strict height for the header area */
+    display: flex;
+    flex-direction: column; /* Stacks name and date */
+    justify-content: center;
+    border-bottom: 1px solid var(--border-soft); /* The horizontal line */
+    margin-bottom: 15px;
+    flex-shrink: 0; /* Prevents the header from squeezing */
+}
+
+.thought-author {
+    font-size: 0.75rem;
+    color: var(--terracotta);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.2;
+}
+
+.thought-date {
+    font-size: 0.65rem;
+    opacity: 0.5;
+    margin-top: 4px;
+}
+
+.thought-body {
+    flex: 1; /* Takes up remaining space */
+    overflow: hidden; /* Clips long text by default */
+    position: relative;
+    text-align: left;
+}
+
+.thought-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--deep-navy);
+    font-style: italic;
+    margin: 0;
+}
+
+/* Scrollable state for the body */
+.thought-body.expanded {
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* Custom scrollbar for a clean look */
+.thought-body.expanded::-webkit-scrollbar {
+    width: 4px;
+}
+.thought-body.expanded::-webkit-scrollbar-thumb {
+    background: var(--terracotta);
+    border-radius: 10px;
+}
+
+.read-more-btn {
+    background: none;
+    border: none;
+    color: var(--terracotta);
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding-top: 12px;
+    text-align: left;
+    flex-shrink: 0; /* Keeps button at the bottom */
+}
