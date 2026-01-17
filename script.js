@@ -542,6 +542,48 @@ function executeDelete() {
     }
 }
 
+function suggestMusic() { 
+    const modalBody = document.getElementById('modal-body');
+    const modal = document.getElementById('content-modal');
+    if (modal && modalBody) {
+        modalBody.innerHTML = `
+            <div style="padding: 10px;">
+                <h2 class="header-gradient" style="margin-bottom: 15px;">Առաջարկել երգ</h2>
+                <p style="margin-bottom: 20px; opacity: 0.8;">Ի՞նչ երգ պետք է լինի ընդհանուր փլեյլիստում:</p>
+                <input type="text" id="music-suggestion-input" placeholder="Արտիստ - Երգի վերնագիր" style="width: 100%; margin-bottom: 25px;">
+                <button class="nav-btn active" onclick="submitMusicSuggestion()" style="width: 100%; padding: 15px;">Ուղարկել ընտրությունը</button>
+            </div>
+        `;
+        modal.classList.remove('hidden');
+        setTimeout(() => document.getElementById('music-suggestion-input')?.focus(), 100);
+    }
+}
+
+function submitMusicSuggestion() {
+    const input = document.getElementById('music-suggestion-input');
+    const val = input ? input.value.trim() : "";
+
+    if (val) {
+        database.ref(`debate_cards/${ROOM_ID}/music_suggestions`).push({
+            suggestion: val,
+            timestamp: Date.now(),
+            date: new Date().toLocaleString()
+        });
+
+        // Show Success Message
+        const modalBody = document.getElementById('modal-body');
+        modalBody.innerHTML = `
+            <div style="padding: 20px;">
+                <h2 class="header-gradient" style="margin-bottom: 15px;">Ուղարկված է!</h2>
+                <p style="margin-bottom: 25px;">"${val}"-ը ավելացվել է գաղտնի ցանկում։ 🎧</p>
+                <button class="nav-btn active" onclick="closeModal()" style="width: 100%; padding: 15px;">Փակել</button>
+            </div>
+        `;
+    } else { 
+        closeModal(); 
+    }
+}
+
 // 8. PARTICLE ENGINE
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas.getContext('2d');
