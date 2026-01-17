@@ -415,10 +415,10 @@ function renderThoughts() {
     if (!grid) return;
     grid.innerHTML = "";
 
-    // 1. Plus Card for creating new thoughts
+    // 1. Plus Card (Same height as thought cards)
     const plusCard = document.createElement('div');
     plusCard.className = "box available";
-    plusCard.style = "cursor: pointer; border: 2px dashed var(--terracotta); font-size: 3rem; color: var(--terracotta); display: flex; justify-content: center; align-items: center; height: 100%; min-height: 250px;";
+    plusCard.style = "cursor: pointer; border: 2px dashed var(--terracotta); font-size: 3rem; color: var(--terracotta); display: flex; justify-content: center; align-items: center; height: 320px;";
     plusCard.innerHTML = "<span>+</span>";
     plusCard.onclick = openThoughtCreator;
     grid.appendChild(plusCard);
@@ -426,19 +426,33 @@ function renderThoughts() {
     // 2. Render existing thoughts
     THOUGHTS.forEach((t, i) => {
         const card = document.createElement('div');
-        card.className = "box poll-card available";
-        card.style.minHeight = "250px";
+        card.className = "box thought-card available";
         card.style.animationDelay = `${i * 0.1}s`;
+        
+        // Use a character threshold for the Read More button
+        const needsReadMore = t.text.length > 140; 
+        
         card.innerHTML = `
-            <div style="width: 100%; text-align: left;">
-                <div style="font-size: 0.7rem; color: var(--terracotta); font-weight: 800; text-transform: uppercase; margin-bottom: 5px;">${t.author}</div>
-                <div style="font-size: 0.65rem; opacity: 0.5; margin-bottom: 15px;">${t.date}</div>
-                <div style="font-size: 1rem; line-height: 1.6; color: var(--deep-navy); font-style: italic;">"${t.text}"</div>
+            <div class="thought-header">
+                <div class="thought-author">${t.author}</div>
+                <div class="thought-date">${t.date}</div>
             </div>
+            <div class="thought-body" id="thought-body-${i}">
+                <p class="thought-text">"${t.text}"</p>
+            </div>
+            ${needsReadMore ? `<button class="read-more-btn" onclick="toggleThought(${i}, this)">Կարդալ ավելին</button>` : ''}
         `;
         grid.appendChild(card);
     });
 }
+
+function toggleThought(index, btn) {
+    const body = document.getElementById(`thought-body-${index}`);
+    const isExpanded = body.classList.toggle('expanded');
+    btn.innerText = isExpanded ? "Փակել" : "Կարդալ ավելին";
+}
+
+// Keep saveNewThought and openThoughtCreator the same as before...
 
 function openThoughtCreator() {
     const modalBody = document.getElementById('modal-body');
