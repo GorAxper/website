@@ -43,6 +43,7 @@ const ROOM_ID = ACCESS_PASSWORD;
 
 let USER_VOTES = {};
 let ANI_POLLS = [];
+let THOUGHTS = []; // New variable
 
 // 2. AUTHENTICATION & SYNC
 function checkPassword() {
@@ -71,6 +72,7 @@ function checkPassword() {
     }
 }
 
+
 function startRealtimeSync() {
     const roomRef = database.ref(`debate_cards/${ROOM_ID}`);
     roomRef.on('value', (snapshot) => {
@@ -78,19 +80,21 @@ function startRealtimeSync() {
         if (data) {
             USER_VOTES = data.votes || {};
             ANI_POLLS = data.custom_polls ? Object.values(data.custom_polls) : [];
+            // Sync Thoughts (ordered by newest first)
+            THOUGHTS = data.thoughts ? Object.values(data.thoughts).reverse() : [];
         } else {
             USER_VOTES = {};
             ANI_POLLS = [];
+            THOUGHTS = [];
         }
-        if (!document.getElementById('polls-view').classList.contains('hidden')) {
-            renderPolls();
-        }
+        if (!document.getElementById('polls-view').classList.contains('hidden')) renderPolls();
+        if (!document.getElementById('thoughts-view').classList.contains('hidden')) renderThoughts();
     });
 }
 
 // 3. NAVIGATION
 function showView(view) {
-    const views = ['home', 'milestones', 'polls'];
+    const views = ['home', 'milestones', 'polls', 'thoughts']; // Added 'thoughts'
     views.forEach(v => {
         const viewEl = document.getElementById(`${v}-view`);
         if (viewEl) viewEl.classList.add('hidden');
@@ -104,6 +108,7 @@ function showView(view) {
     if (view === 'polls') renderPolls();
     if (view === 'milestones') generateGrid();
     if (view === 'home') updateWeatherAndClocks();
+    if (view === 'thoughts') renderThoughts(); // Added trigger
 }
 
 // 4. PAGE 1 LOGIC: LIVE CONNECTION
@@ -403,6 +408,77 @@ function openModal(d) {
 }
 function closeModal() { document.getElementById('content-modal').classList.add('hidden'); }
 function closeOnOutsideClick(e) { if (e.target.classList.contains('modal-overlay')) closeModal(); }
+
+// --- PAGE 4 LOGIC: THOUGHTS (ՄՏՔԵՐ) ---
+function renderThoughts() {
+    const grid = document.getElementById('thoughts-grid');
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    // 1. Plus Card for creating new thoughts
+    const plusCard = document.createElement('div');
+    plusCard.className = "box available";
+    plusCard.style = "cursor: pointer; border: 2px dashed var(--terracotta); font-size: 3rem; color: var(--terracotta); display: flex; justify-content: center; align-items: center; height: 100%; min-height: 250px;";
+    plusCard.innerHTML = "<span>+</span>";
+    plusCard.onclick = openThoughtCreator;
+    grid.appendChild(plusCard);
+
+    // 2. Render existing thoughts
+    THOUGHTS.forEach((t, i) => {
+        const card = document.createElement('div');
+        card.className = "box poll-card available";
+        card.style.minHeight = "250px";
+        card.style.animationDelay = `${i * 0.1}s`;
+        card.innerHTML = `
+            <div style="width: 100%; text-align: left;">
+                <div style="font-size: 0.7rem; color: var(--terracotta); font-weight: 800; text-transform: uppercase; margin-bottom: 5px;">${t.author}</div>
+                <div style="font-size: 0.65rem; opacity: 0.5; margin-bottom: 15px;">${t.date}</div>
+                <div style="font-size: 1rem; line-height: 1.6; color: var(--deep-navy); font-style: italic;">"${t.text}"</div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function openThoughtCreator() {
+    const modalBody = document.getElementById('modal-body');
+    const modal = document.getElementById('content-modal');
+    if (modal && modalBody) {
+        modalBody.innerHTML = `
+            <div style="padding: 10px; text-align: left;">
+                <h2 class="header-gradient" style="margin-bottom: 20px; text-align: center;">Ավելացնել Միտք</h2>
+                <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">ԱՆՈՒՆ</label>
+                <input type="text" id="thought-author" placeholder="Ձեր անունը..." style="width: 100%; margin: 8px 0 20px;">
+                <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">ՄԻՏՔ</label>
+                <textarea id="thought-text" style="width: 100%; height: 120px; margin: 8px 0 20px; padding: 12px; border-radius: 12px; border: 1.5px solid #eee; font-family: inherit; resize: none;"></textarea>
+                <button class="nav-btn active" onclick="saveNewThought()" style="width: 100%; padding: 15px;">Հաստատել</button>
+            </div>
+        `;
+        modal.classList.remove('hidden');
+    }
+}
+
+function saveNewThought() {
+    const author = document.getElementById('thought-author').value.trim();
+    const text = document.getElementById('thought-text').value.trim();
+    
+    if (author === "" || text === "") return;
+
+    // Get Armenian Time for the timestamp
+    const now = new Date();
+    const options = { timeZone: 'Asia/Yerevan', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    const amTime = new Intl.DateTimeFormat('hy-AM', options).format(now);
+
+    const newThought = {
+        author: author,
+        text: text,
+        date: amTime,
+        timestamp: Date.now()
+    };
+
+    database.ref(`debate_cards/${ROOM_ID}/thoughts`).push(newThought);
+    closeModal();
+}
 
 // 8. PARTICLE ENGINE
 const canvas = document.getElementById('particle-canvas');
