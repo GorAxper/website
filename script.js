@@ -11,6 +11,7 @@ const INTERVAL_DAYS = 15;
 
 const PLAYLIST = [
     { title: "Tigran Mansuryan - Siro Meghedi", src: "music/Tigran Mansuryan - Siro Meghedi.mp3" },
+    { title: "Lara Fabian - Je t'aime", src: "music/Lara Fabian - Je taime.mp3" },
     { title: "Arno Babajanyan - Elegia", src: "music/Arno Babajanyan - Elegia.mp3" },
     { title: "Charles Aznavour - She", src: "music/Charles Aznavour - She.mp3" },
     { title: "Imany - You will never know", src: "music/Imany - You will never know.mp3" },
