@@ -45,12 +45,23 @@ const ROOM_ID = ACCESS_PASSWORD;
 
 let USER_VOTES = {};
 let ANI_POLLS = [];
+let GOR_POLLS_DISPLAY = []
 let THOUGHTS = []; // New variable
+
+function trackEvent(action, category, label) {
+    if (typeof gtag === 'function') {
+        gtag('event', action, {
+            'event_category': category,
+            'event_label': label
+        });
+    }
+}
 
 // 2. AUTHENTICATION & SYNC
 function checkPassword() {
     const input = document.getElementById('password-input').value;
     if (input === ACCESS_PASSWORD) {
+        trackEvent('login_success', 'Auth', 'User Logged In');
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('main-content').classList.remove('hidden');
         document.getElementById('nav-bar').classList.remove('hidden');
@@ -102,6 +113,7 @@ function startRealtimeSync() {
 
 // 3. NAVIGATION
 function showView(view) {
+    trackEvent('navigate_to', 'Navigation', view);
     const views = ['home', 'milestones', 'polls', 'thoughts']; // Added 'thoughts'
     views.forEach(v => {
         const viewEl = document.getElementById(`${v}-view`);
@@ -437,6 +449,7 @@ function submitOpenAnswer(id) {
 }
 
 function vote(id, choice) { 
+    trackEvent('poll_vote', 'Interaction', `Poll: ${id} | Choice: ${choice}`);
     database.ref(`debate_cards/${ROOM_ID}/votes/${id}`).set(choice);
 }
 
@@ -456,6 +469,8 @@ function updateTrackInfo() {
     audio.src = PLAYLIST[trackIdx].src;
 }
 function togglePlay() {
+    const state = audio.paused ? 'Play' : 'Pause';
+    trackEvent('music_control', 'Audio', state);
     const btn = document.getElementById('play-btn');
     if (audio.paused) { audio.play().catch(e => {}); btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`; }
     else { audio.pause(); btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`; }
