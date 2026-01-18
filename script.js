@@ -61,7 +61,21 @@ function trackEvent(action, category, label) {
 function checkPassword() {
     const input = document.getElementById('password-input').value;
     if (input === ACCESS_PASSWORD) {
-        trackEvent('login_success', 'Auth', 'User Logged In');
+        // Generate a unique ID for this specific browser/device if it doesn't exist
+        let deviceID = localStorage.getItem('journey_user_id');
+        if (!deviceID) {
+            deviceID = 'user_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('journey_user_id', deviceID);
+        }
+        
+        // 1. Send the ID to Google Analytics for session tracking
+        gtag('config', 'G-NJ8T459BF5', {
+            'user_id': deviceID
+        });
+
+        // 2. Log the login event specifically for this ID
+        trackEvent('login_success', 'Auth', deviceID);
+
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('main-content').classList.remove('hidden');
         document.getElementById('nav-bar').classList.remove('hidden');
@@ -621,7 +635,7 @@ function suggestMusic() {
                 <h2 class="header-gradient" style="margin-bottom: 15px;">Առաջարկել երգ</h2>
                 <p style="margin-bottom: 20px; opacity: 0.8;">Ի՞նչ երգ պետք է լինի ընդհանուր փլեյլիստում:</p>
                 <input type="text" id="music-suggestion-input" placeholder="Արտիստ - Երգի վերնագիր" style="width: 100%; margin-bottom: 25px;">
-                <button class="nav-btn active" onclick="submitMusicSuggestion()" style="width: 100%; padding: 15px;">Ուղարկել ընտրությունը</button>
+                <button class="nav-btn aReports > Realtimective" onclick="submitMusicSuggestion()" style="width: 100%; padding: 15px;">Ուղարկել ընտրությունը</button>
             </div>
         `;
         modal.classList.remove('hidden');
