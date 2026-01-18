@@ -55,7 +55,7 @@ function trackEvent(action, category, label) {
         event_category: category,
         event_label: label
     });
-    
+
     if (typeof gtag === 'function') {
         gtag('event', action, {
             'event_category': category,
@@ -77,6 +77,7 @@ function checkPassword() {
         // --- NEW FIREBASE TRACKING ---
         analytics.setUserId(deviceID); // Links the session to this specific ID
         analytics.logEvent('login', { method: 'password' }); 
+        window.clarity("identify", deviceID);
         // -----------------------------
         // 1. Send the ID to Google Analytics for session tracking
         gtag('config', 'G-NJ8T459BF5', {
