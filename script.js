@@ -21,9 +21,7 @@ const PLAYLIST = [
     
 ];
 
-const GOR_POLLS = [
-    { q: "Ո՞րն է բանալին:", isOpenEnded: true }
-];
+const GOR_POLLS = [];
 
 const GIFT_DAYS = [
     "2025-10-15", "2025-12-25", "2026-01-14", "2026-02-14", "2026-05-20"
@@ -83,12 +81,18 @@ function startRealtimeSync() {
         const data = snapshot.val();
         if (data) {
             USER_VOTES = data.votes || {};
-            // Store with Firebase IDs for deletion
+            // Fetch Ani's polls
             ANI_POLLS = data.custom_polls ? Object.entries(data.custom_polls).map(([id, val]) => ({...val, id})) : [];
+            // Fetch Gor's dynamic polls
+            const gorDynamic = data.gor_custom_polls ? Object.entries(data.gor_custom_polls).map(([id, val]) => ({...val, id})) : [];
+            // Combine hardcoded Gor polls with dynamic ones
+            GOR_POLLS_DISPLAY = [...GOR_POLLS, ...gorDynamic]; 
+            
             THOUGHTS = data.thoughts ? Object.entries(data.thoughts).map(([id, val]) => ({...val, id})).reverse() : [];
         } else {
             USER_VOTES = {};
             ANI_POLLS = [];
+            GOR_POLLS_DISPLAY = [...GOR_POLLS];
             THOUGHTS = [];
         }
         if (!document.getElementById('polls-view').classList.contains('hidden')) renderPolls();
@@ -261,6 +265,15 @@ function changeMonth(delta) {
     generateGrid();
 }
 
+function createPlusCard(onClickAction) {
+    const card = document.createElement('div');
+    card.className = "box available";
+    card.style = "cursor: pointer; border: 2px dashed var(--terracotta); font-size: 3rem; color: var(--terracotta); display: flex; justify-content: center; align-items: center; height: 100%; min-height: 340px;";
+    card.innerHTML = "<span>+</span>";
+    card.onclick = onClickAction;
+    return card;
+}
+
 // 6. PAGE 3 LOGIC: THE GREAT DEBATE (FIXED OVERFLOW)
 function renderPolls() {
     const pollsView = document.getElementById('polls-view');
@@ -280,15 +293,22 @@ function renderPolls() {
     const gorGrid = document.getElementById('gor-grid');
     const aniGrid = document.getElementById('ani-grid');
 
-    GOR_POLLS.forEach((p, i) => gorGrid.appendChild(createPollCard(p, `gor_${i}`, i * 0.1)));
-    ANI_POLLS.forEach((p, i) => aniGrid.appendChild(createPollCard(p, `ani_${i}`, (i + GOR_POLLS.length) * 0.1)));
+    // Use GOR_POLLS_DISPLAY which includes dynamic polls
+    GOR_POLLS_DISPLAY.forEach((p, i) => {
+        const id = p.id ? `gor_dyn_${p.id}` : `gor_static_${i}`;
+        gorGrid.appendChild(createPollCard(p, id, i * 0.1));
+    });
 
-    const plusCard = document.createElement('div');
-    plusCard.className = "box available";
-    plusCard.style = "cursor: pointer; border: 2px dashed var(--terracotta); font-size: 3rem; color: var(--terracotta); display: flex; justify-content: center; align-items: center; height: 100%; min-height: 340px;";
-    plusCard.innerHTML = "<span>+</span>";
-    plusCard.onclick = openPollCreator;
-    aniGrid.appendChild(plusCard);
+    // Plus Card for Gor
+    const plusCardGor = createPlusCard(() => openPollCreator('gor'));
+    gorGrid.appendChild(plusCardGor);
+
+    // Ani's Polls
+    ANI_POLLS.forEach((p, i) => aniGrid.appendChild(createPollCard(p, `ani_${p.id}`, (i + GOR_POLLS_DISPLAY.length) * 0.1)));
+
+    // Plus Card for Ani
+    const plusCardAni = createPlusCard(() => openPollCreator('ani'));
+    aniGrid.appendChild(plusCardAni);
 }
 
 function createPollCard(p, id, delay) {
@@ -299,12 +319,13 @@ function createPollCard(p, id, delay) {
     const existingVote = USER_VOTES[id];
     let pollHTML = ``;
 
-    // 1. Add the delete button first if it's an Ani poll
+    // Show delete button for any dynamic poll (Ani or Gor)
     if (id.startsWith('ani_')) {
         pollHTML += `<span class="delete-btn" onclick="confirmDelete('custom_polls/${p.id}')">&times;</span>`;
+    } else if (id.startsWith('gor_dyn_')) {
+        pollHTML += `<span class="delete-btn" onclick="confirmDelete('gor_custom_polls/${p.id}')">&times;</span>`;
     }
 
-    // 2. Add the question
     pollHTML += `<div class="poll-question">${p.q}</div>`;
     
     // 3. Add the logic for answers
@@ -339,35 +360,62 @@ function createPollCard(p, id, delay) {
     return card;
 }
 
-function openPollCreator() {
+let currentPollTarget = 'ani'; 
+
+function openPollCreator(target) {
+    currentPollTarget = target; 
     const modalBody = document.getElementById('modal-body');
     const modal = document.getElementById('content-modal');
+    
     if (modal && modalBody) {
         modalBody.innerHTML = `
             <div style="padding: 10px; text-align: left;">
-                <h2 class="header-gradient" style="margin-bottom: 20px; text-align: center;">Ստեղծել նոր հարց</h2>
-                <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-weight: 700; cursor: pointer; background: #f8f8f8; padding: 10px; border-radius: 8px;">
-                    <input type="checkbox" id="is-open-ended" onchange="document.getElementById('options-container').style.display = this.checked ? 'none' : 'block'" style="width: 20px; height: 20px;"> 
-                    <span>Բաց հարց (առանց տարբերակների)</span>
-                </label>
-                <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">ՀԱՐՑ</label>
-                <input type="text" id="new-poll-q" maxlength="50" style="width: 100%; margin: 8px 0 20px;">
-                <div id="options-container">
-                    <label style="font-size: 0.8rem; font-weight: 700; opacity: 0.7;">ՏԱՐԲԵՐԱԿՆԵՐ</label>
-                    <input type="text" class="new-poll-opt" style="width: 100%; margin: 8px 0;">
-                    <input type="text" class="new-poll-opt" style="width: 100%; margin: 8px 0;">
+                <h2 class="header-gradient" style="margin-bottom: 20px; text-align: center;">
+                    Նոր հարց (${target === 'gor' ? 'Գոռին' : 'Անիին'})
+                </h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; opacity: 0.7; margin-bottom: 8px;">ՀԱՐՑԸ</label>
+                    <input type="text" id="new-poll-q" placeholder="Գրեք հարցը այստեղ..." style="width: 100%; text-align: left; padding: 12px;">
                 </div>
-                <button class="nav-btn active" onclick="saveNewPoll()" style="width: 100%; padding: 15px;">Ստեղծել</button>
+
+                <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="is-open-ended" onchange="document.getElementById('options-setup').style.display = this.checked ? 'none' : 'block'" style="width: auto;">
+                    <label for="is-open-ended" style="font-size: 0.9rem; font-weight: 600;">Բաց հարց (առանց տարբերակների)</label>
+                </div>
+
+                <div id="options-setup" style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; opacity: 0.7; margin-bottom: 8px;">ՏԱՐԲԵՐԱԿՆԵՐ</label>
+                    <div id="options-list">
+                        <input type="text" class="new-poll-opt" placeholder="Տարբերակ 1" style="width: 100%; text-align: left; margin-bottom: 8px; padding: 10px;">
+                        <input type="text" class="new-poll-opt" placeholder="Տարբերակ 2" style="width: 100%; text-align: left; margin-bottom: 8px; padding: 10px;">
+                    </div>
+                    <button class="nav-btn" onclick="addOptionInput()" style="font-size: 0.7rem; padding: 5px 15px; margin-top: 5px;">+ Ավելացնել տարբերակ</button>
+                </div>
+
+                <button class="nav-btn active" onclick="saveNewPoll()" style="width: 100%; padding: 15px; margin-top: 10px;">Ստեղծել</button>
             </div>
         `;
         modal.classList.remove('hidden');
     }
 }
 
+// Helper function to add more multiple-choice rows
+function addOptionInput() {
+    const list = document.getElementById('options-list');
+    const input = document.createElement('input');
+    input.type = "text";
+    input.className = "new-poll-opt";
+    input.placeholder = `Տարբերակ ${list.children.length + 1}`;
+    input.style = "width: 100%; text-align: left; margin-bottom: 8px; padding: 10px;";
+    list.appendChild(input);
+}
+
 function saveNewPoll() {
     const q = document.getElementById('new-poll-q').value.trim();
     const isOpenEnded = document.getElementById('is-open-ended').checked;
     if (q.length < 3) return;
+
     let newPoll = { q };
     if (isOpenEnded) {
         newPoll.isOpenEnded = true;
@@ -376,7 +424,10 @@ function saveNewPoll() {
         if (options.length < 2) return;
         newPoll.options = options;
     }
-    database.ref(`debate_cards/${ROOM_ID}/custom_polls`).push(newPoll);
+
+    // Determine path based on target
+    const path = currentPollTarget === 'gor' ? 'gor_custom_polls' : 'custom_polls';
+    database.ref(`debate_cards/${ROOM_ID}/${path}`).push(newPoll);
     closeModal();
 }
 
