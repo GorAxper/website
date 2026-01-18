@@ -5,21 +5,41 @@
     --terracotta: #6B3F69;
     --peach: #8D5F8C;
     --dusty-purple: #A376A2;
-    --cream-bg: #ffffff;
-    --white: #ffffff;
-    --border-soft: rgba(5, 25, 55, 0.1);
-    --shadow-rich: 0 15px 40px rgba(5, 25, 55, 0.08);
+    /* Softened background color for glass blending */
+    --cream-bg: rgba(255, 255, 255, 0.4); 
+    --white: rgba(255, 255, 255, 0.85);
+    --border-soft: rgba(255, 255, 255, 0.3);
+    --shadow-rich: 0 20px 50px rgba(5, 25, 55, 0.12);
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--cream-bg);
     color: var(--deep-navy);
     min-height: 100vh;
     overflow-x: hidden;
+    /* The Sunset Backdrop */
+    background: url('bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
 }
+
+/* This creates a soft tint and blur over the background image */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(
+        135deg, 
+        rgba(255, 255, 255, 0.9) 0%, 
+        rgba(238, 230, 238, 0.7) 100%
+    );
+    backdrop-filter: blur(5px); /* Deep blur for a 'cloudy' sunset look */
+    -webkit-backdrop-filter: blur(5px);
+    z-index: -2;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 #particle-canvas {
     position: fixed;
@@ -27,7 +47,10 @@ body {
     width: 100%; height: 100%;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(circle at center, #ffffff 0%, var(--cream-bg) 100%);
+    /* Subtle Mesh Glows to make particles pop */
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(141, 95, 140, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(107, 63, 105, 0.1) 0%, transparent 40%);
 }
 
 #weather-effect-overlay {
@@ -146,7 +169,8 @@ h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: upper
     border: 1px solid var(--border-soft);
     border-radius: 20px;
     box-shadow: var(--shadow-rich);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px); /* Stronger blur for cards */
+    -webkit-backdrop-filter: blur(15px);
 }
 
 /* --- NAVIGATION --- */
