@@ -41,6 +41,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
+const analytics = firebase.analytics();
 const ROOM_ID = ACCESS_PASSWORD; 
 
 let USER_VOTES = {};
@@ -49,6 +50,12 @@ let GOR_POLLS_DISPLAY = []
 let THOUGHTS = []; // New variable
 
 function trackEvent(action, category, label) {
+    // This sends data to Firebase Analytics
+    analytics.logEvent(action, {
+        event_category: category,
+        event_label: label
+    });
+    
     if (typeof gtag === 'function') {
         gtag('event', action, {
             'event_category': category,
@@ -67,7 +74,10 @@ function checkPassword() {
             deviceID = 'user_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('journey_user_id', deviceID);
         }
-        
+        // --- NEW FIREBASE TRACKING ---
+        analytics.setUserId(deviceID); // Links the session to this specific ID
+        analytics.logEvent('login', { method: 'password' }); 
+        // -----------------------------
         // 1. Send the ID to Google Analytics for session tracking
         gtag('config', 'G-NJ8T459BF5', {
             'user_id': deviceID
