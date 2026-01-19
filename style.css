@@ -1023,11 +1023,9 @@ textarea:focus {
 /* Phones (up to 768px) */
 @media (max-width: 768px) {
     #nav-bar {
-        top: 10px;
         width: 95%;
-        gap: 5px;
+        gap: 1px;
         padding: 5px;
-        overflow-x: auto; /* Allows horizontal swipe for nav on tiny phones */
         white-space: nowrap;
     }
 
@@ -1127,7 +1125,7 @@ textarea:focus {
 
     .nav-btn {
         padding: 8px 10px;
-        font-size: 0.75rem;
+        font-size: 0.67rem;
     }
 
     .modal-panel {
