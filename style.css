@@ -64,7 +64,7 @@ body::before {
 h1 { font-family: 'Poppins', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
 
 .header-gradient {
-    background: linear-gradient(90deg, #FA6868, #e95555);
+    background: linear-gradient(90deg, #f2676a, #b76181);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
