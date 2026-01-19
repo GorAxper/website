@@ -1,7 +1,7 @@
 /* --- THE JOURNEY: LOGIC ENGINE --- */
 
 // 1. CONFIGURATION
-const ACCESS_PASSWORD = "goraxper";
+const ACCESS_PASSWORD = "2026";
 const VANCOUVER_COORDS = { lat: 49.2827, lon: -123.1207 };
 const GORIS_COORDS = { lat: 39.5074, lon: 46.3317 };
 
@@ -408,7 +408,7 @@ function openPollCreator(target) {
         modalBody.innerHTML = `
             <div style="padding: 10px; text-align: left;">
                 <h2 class="header-gradient" style="margin-bottom: 20px; text-align: center;">
-                    Նոր հարց (${target === 'gor' ? 'Գոռին' : 'Անիին'})
+                    Նոր հարց
                 </h2>
                 
                 <div style="margin-bottom: 20px;">
@@ -753,5 +753,4 @@ document.addEventListener('DOMContentLoaded', () => {
 // Ensure particles and logic are properly closed
 initParticles(); 
 animateParticles();
-
 window.onresize = initParticles;
