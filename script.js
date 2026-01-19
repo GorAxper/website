@@ -266,15 +266,24 @@ function generateGrid() {
     const calGrid = document.createElement('div');
     calGrid.className = "milestone-calendar-grid";
 
-    ['Կիր', 'Երկ', 'Երք', 'Չրք', 'Հնգ', 'Ուրբ', 'Շբթ'].forEach(day => {
+    // 1. Updated Headers: Start with Monday (Երկ), End with Sunday (Կիր)
+    const dayHeaders = ['Երկ', 'Երք', 'Չրք', 'Հնգ', 'Ուրբ', 'Շբթ', 'Կիր'];
+    dayHeaders.forEach(day => {
         calGrid.innerHTML += `<div class="calendar-day-header">${day}</div>`;
     });
 
-    const firstDay = new Date(year, month, 1).getDay();
+    // 2. Adjust First Day logic for Monday start
+    // Standard getDay(): 0=Sun, 1=Mon...
+    let firstDay = new Date(year, month, 1).getDay();
+    
+    // Convert 0 (Sun) to 6, and shift others down by 1 (Mon becomes 0, Tue becomes 1, etc.)
+    let offset = (firstDay === 0) ? 6 : firstDay - 1;
+
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const today = new Date();
 
-    for (let i = 0; i < firstDay; i++) {
+    // 3. Render empty cells based on the new offset
+    for (let i = 0; i < offset; i++) {
         calGrid.innerHTML += `<div class="calendar-cell empty"></div>`;
     }
 
