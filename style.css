@@ -1140,7 +1140,7 @@ textarea:focus {
 
 /* Optional: Add a "Today" label via CSS */
 .calendar-cell.today-highlight::before {
-    content: "ԱՅՍՕՐ";
+    content: "";
     position: absolute;
     top: 10px;
     font-size: 0.5rem;
@@ -1157,7 +1157,7 @@ textarea:focus {
 
 /* Armenian Label for the Meeting Day */
 .calendar-cell.meeting-day-highlight::before {
-    content: "ՔԵԶ ՏԵՍԱ"; /* "Our Day" in Armenian */
+    content: ""; /* "Our Day" in Armenian */
     position: absolute;
     top: 10px;
     font-size: 0.5rem;
