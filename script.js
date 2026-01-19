@@ -24,7 +24,7 @@ const PLAYLIST = [
 const GOR_POLLS = [];
 
 const GIFT_DAYS = [
-    "2025-10-15", "2025-12-25", "2026-01-14", "2026-02-14", "2026-05-20"
+    "2026-02-02", "2026-03-19", "2026-04-27", "2026-05-20" 
 ];
 
 // --- FIREBASE INITIALIZATION ---
@@ -151,9 +151,12 @@ function showView(view) {
     document.getElementById(`nav-${view === 'home' ? 'home' : view}`).classList.add('active');
 
     if (view === 'polls') renderPolls();
-    if (view === 'milestones') generateGrid();
+    if (view === 'milestones') {
+        updateMilestoneHeader(); // <--- Add this line
+        generateGrid();
+    }
     if (view === 'home') updateWeatherAndClocks();
-    if (view === 'thoughts') renderThoughts(); // Added trigger
+    if (view === 'thoughts') renderThoughts();
 }
 
 // 4. PAGE 1 LOGIC: LIVE CONNECTION
@@ -238,6 +241,29 @@ function updateWeatherUI(city, data) {
 // 5. PAGE 2 LOGIC: ARCHIVES (RESTORED TO ORIGINAL)
 let currentDisplayDate = new Date(2026, 0, 1); 
 
+function updateMilestoneHeader() {
+    const headerContainer = document.getElementById('milestone-header-container');
+    if (!headerContainer) return;
+
+    // Calculation: July 18, 2025 (Month is 0-indexed, so July is 6)
+    const startDate = new Date(2025, 6, 18); 
+    const today = new Date();
+    
+    // Calculate difference in days
+    const diffTime = Math.abs(today - startDate);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    headerContainer.innerHTML = `
+        <div class="distance-header">
+            <p class="distance-label" style="color: #051937; opacity: 1; font-size: 2.8rem; font-family: 'JetBrains Mono', monospace">${diffDays} ՕՐ</p>
+            <h2 style="color: var(--terracotta); font-family: 'Poppins', sans-serif; font-size: 1.2rem; font-weight: 550; letter-spacing: 2px;">Այն պահից, երբ հանդիպեցի քեզ:</h2>
+            <div class="distance-line">
+                <span style="color: black;">⧗</span>
+            </div>
+        </div>
+    `;
+}
+
 function generateGrid() {
     const gridContainer = document.getElementById('calendar-grid');
     if (!gridContainer) return;
@@ -249,9 +275,16 @@ function generateGrid() {
     
     const year = currentDisplayDate.getFullYear();
     const month = currentDisplayDate.getMonth();
-    
     const monthName = `${monthsFullHy[month]}  ${year}`;
 
+    // --- ARMENIAN TIME CALCULATION ---
+    const nowArmenia = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"}));
+    const armToday = nowArmenia.getDate();
+    const armMonth = nowArmenia.getMonth();
+    const armYear = nowArmenia.getFullYear();
+    // ---------------------------------
+
+    // (Navigation Wrapper and Grid Header logic remains the same...)
     const navWrapper = document.createElement('div');
     navWrapper.className = "calendar-nav-bar";
     navWrapper.innerHTML = `
@@ -266,40 +299,40 @@ function generateGrid() {
     const calGrid = document.createElement('div');
     calGrid.className = "milestone-calendar-grid";
 
-    // 1. Updated Headers: Start with Monday (Երկ), End with Sunday (Կիր)
     const dayHeaders = ['Երկ', 'Երք', 'Չրք', 'Հնգ', 'Ուրբ', 'Շբթ', 'Կիր'];
     dayHeaders.forEach(day => {
         calGrid.innerHTML += `<div class="calendar-day-header">${day}</div>`;
     });
 
-    // 2. Adjust First Day logic for Monday start
-    // Standard getDay(): 0=Sun, 1=Mon...
     let firstDay = new Date(year, month, 1).getDay();
-    
-    // Convert 0 (Sun) to 6, and shift others down by 1 (Mon becomes 0, Tue becomes 1, etc.)
     let offset = (firstDay === 0) ? 6 : firstDay - 1;
-
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const today = new Date();
 
-    // 3. Render empty cells based on the new offset
     for (let i = 0; i < offset; i++) {
         calGrid.innerHTML += `<div class="calendar-cell empty"></div>`;
     }
 
     for (let d = 1; d <= daysInMonth; d++) {
-        const dateObj = new Date(year, month, d);
         const dateISO = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         const isGift = GIFT_DAYS.includes(dateISO);
-        const isPastOrToday = today >= dateObj;
+        
+        // Check if this cell is "Today" in Armenia
+        const isToday = (d === armToday && month === armMonth && year === armYear);
+        
+        // --- ADD THE LINE BELOW ---
+        const isMeetingDay = (d === 18 && month === 6 && year === 2025); 
+        
         const cell = document.createElement('div');
-        cell.className = `calendar-cell ${isGift && isPastOrToday ? 'available gift-day' : 'regular-day'}`;
+        
+        // --- UPDATE THIS CLASSNAME LINE ---
+        cell.className = `calendar-cell ${isGift ? 'available gift-day' : 'regular-day'} ${isToday ? 'today-highlight' : ''} ${isMeetingDay ? 'meeting-day-highlight' : ''}`;
+        
         cell.innerHTML = `<span>${d}</span>${isGift ? '<div class="gift-icon">🎁</div>' : ''}`;
-        if (isGift && isPastOrToday) {
+        
+        if (isGift) {
             cell.onclick = () => openModal(`Gift for ${monthName} ${d}`);
-        } else {
-            cell.onclick = null;
         }
+        
         calGrid.appendChild(cell);
     }
     monthWrapper.appendChild(calGrid);
