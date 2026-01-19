@@ -996,3 +996,136 @@ textarea:focus {
     margin: 15px auto 0;
     opacity: 0.3;
 }
+
+
+
+@media (max-width: 1024px) {
+    .view-container {
+        padding-top: 120px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .clock-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .big-time {
+        font-size: 3rem;
+    }
+
+    #live-distance {
+        font-size: 2.2rem;
+    }
+}
+
+/* Phones (up to 768px) */
+@media (max-width: 768px) {
+    #nav-bar {
+        top: 10px;
+        width: 95%;
+        gap: 5px;
+        padding: 5px;
+        overflow-x: auto; /* Allows horizontal swipe for nav on tiny phones */
+        white-space: nowrap;
+    }
+
+    .nav-btn {
+        padding: 8px 15px;
+        font-size: 0.8rem;
+    }
+
+    /* Stack Clocks vertically */
+    .clock-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .clock-card {
+        padding: 30px 20px;
+    }
+
+    .weather-visual {
+        width: 100%;
+        max-width: 300px;
+        height: 180px;
+    }
+
+    .big-time {
+        font-size: 2.8rem;
+    }
+
+    /* Calendar & Polls Grid */
+    .calendar-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .milestone-calendar-grid {
+        gap: 4px;
+    }
+
+    .calendar-cell {
+        font-size: 0.8rem;
+    }
+
+    /* Thought & Poll Cards */
+    .poll-card, .thought-card {
+        min-height: 300px;
+        padding: 20px !important;
+    }
+
+    .thought-text {
+        font-size: 0.85rem;
+    }
+
+    /* Distance Header */
+    #live-distance {
+        font-size: 1.8rem;
+    }
+
+    .distance-line {
+        width: 150px;
+    }
+
+    /* Music Player Adjustments */
+    #music-container:not(.folded) {
+        width: calc(100% - 40px);
+        right: 20px;
+        bottom: 20px;
+    }
+
+    /* Login Screen */
+    .login-card {
+        padding: 2rem 1.5rem;
+        border-radius: 20px;
+    }
+
+    .login-card h1 {
+        font-size: 1.8rem;
+    }
+
+    .welcome-quote {
+        font-size: 0.75rem;
+    }
+}
+
+/* Small Phones (up to 480px) */
+@media (max-width: 480px) {
+    .calendar-grid {
+        grid-template-columns: 1fr; 
+    }
+
+    .big-time {
+        font-size: 2.2rem;
+    }
+
+    .nav-btn {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+
+    .modal-panel {
+        padding: 30px 20px;
+    }
+}
