@@ -1213,6 +1213,39 @@ textarea:focus {
         /* Use shadow as a border so it doesn't take up physical space */
         box-shadow: inset 0 0 0 1px var(--border-soft); 
     }
+
+    #polls-view .calendar-grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centers the cards horizontally */
+        gap: 25px;
+    }
+
+    /* Style the Poll Cards and the "+" Card in the Polls view */
+    #polls-view .poll-card, 
+    #polls-view .box.available {
+        width: 75%; /* Set to roughly 70-75% of the screen width */
+        max-width: 240px; /* Prevents them from getting too large */
+        min-height: 280px; /* Slightly shorter for mobile efficiency */
+        margin: 0 auto;
+        padding: 20px !important;
+    }
+
+    .box.available {
+        min-height: 280px;
+    }
+
+    /* Adjust the font size of the questions for the smaller cards */
+    .poll-question {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    /* Ensure buttons within the cards fit nicely */
+    .poll-btn {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
 }
 
 /* Small Phones (up to 480px) */
@@ -1232,5 +1265,10 @@ textarea:focus {
 
     .modal-panel {
         padding: 30px 20px;
+    }
+
+    #polls-view .poll-card,
+    #polls-view .box.available {
+        width: 85%; /* Slightly wider on very small screens to maintain readability */
     }
 }

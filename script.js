@@ -314,7 +314,7 @@ function changeMonth(delta) {
 function createPlusCard(onClickAction) {
     const card = document.createElement('div');
     card.className = "box available";
-    card.style = "cursor: pointer; border: 2px dashed var(--terracotta); font-size: 3rem; color: var(--terracotta); display: flex; justify-content: center; align-items: center; height: 100%; min-height: 340px;";
+    card.style = "cursor: pointer; border: 2px dashed var(--terracotta); font-size: 3rem; color: var(--terracotta); display: flex; justify-content: center; align-items: center; height: 100%;";
     card.innerHTML = "<span>+</span>";
     card.onclick = onClickAction;
     return card;
