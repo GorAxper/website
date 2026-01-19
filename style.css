@@ -1000,6 +1000,177 @@ textarea:focus {
 
 
 
+.thought-body {
+    flex: 1;
+    overflow: hidden; /* Hide overflow for short texts */
+    position: relative;
+    text-align: left;
+}
+
+.thought-body.expanded {
+    overflow-y: auto; /* Enable scrolling only when "Կարդալ" is clicked */
+}
+
+.thought-card {
+    position: relative;
+    overflow: hidden; /* Necessary to hide the tray when closed */
+}
+
+.thought-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.reply-count-btn {
+    background: rgba(107, 63, 105, 0.1);
+    border: none;
+    padding: 5px 12px;
+    border-radius: 20px;
+    color: var(--terracotta);
+    font-size: 0.7rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.reply-count-btn:hover {
+    background: var(--terracotta);
+    color: white;
+}
+
+/* The Sliding Tray */
+.reply-tray {
+    position: absolute;
+    bottom: -100%; /* Hidden by default */
+    left: 0;
+    width: 100%;
+    height: 85%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border-soft);
+    z-index: 20;
+    transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+.reply-tray.active {
+    bottom: 0;
+}
+
+.tray-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.tray-title {
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--deep-navy);
+}
+
+.reply-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.chat-bubble {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    border-left: 3px solid var(--terracotta);
+}
+
+.chat-name {
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: var(--terracotta);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.chat-msg {
+    font-size: 0.8rem;
+    color: var(--deep-navy);
+}
+
+.reply-input-bar {
+    display: flex;
+    gap: 8px;
+}
+
+.reply-input-bar input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    font-size: 0.8rem;
+    text-align: left;
+}
+
+.send-icon-btn {
+    background: var(--deep-navy);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: 900;
+}
+
+.calendar-cell.today-highlight {
+    background: rgba(255, 187, 92, 0.1); /* Soft dusty purple tint */
+    border: 2px solid rgb(255, 144, 54) !important;
+    color: rgb(66, 55, 46);
+    box-shadow: 0 0 15px rgba(107, 63, 105, 0.2);
+}
+
+/* Optional: Add a "Today" label via CSS */
+.calendar-cell.today-highlight::before {
+    content: "ԱՅՍՕՐ";
+    position: absolute;
+    top: 10px;
+    font-size: 0.5rem;
+    letter-spacing: 0.5px;
+    font-weight: 900;
+}
+
+.calendar-cell.meeting-day-highlight {
+    background: rgba(107, 63, 105, 0.1) !important; /* Soft terracotta tint */
+    border: 2px solid var(--terracotta) !important;
+    color: var(--deep-navy);
+    box-shadow: 0 0 15px rgba(107, 63, 105, 0.2);
+}
+
+/* Armenian Label for the Meeting Day */
+.calendar-cell.meeting-day-highlight::before {
+    content: "ՔԵԶ ՏԵՍԱ"; /* "Our Day" in Armenian */
+    position: absolute;
+    top: 10px;
+    font-size: 0.5rem;
+    letter-spacing: 0.5px;
+    font-weight: 900;
+    color: var(--terracotta);
+}
+
+/* Remove the old ::after content if it's still there */
+.calendar-cell.meeting-day-highlight::after {
+    display: none;
+}
+
 @media (max-width: 1024px) {
     .view-container {
         padding-top: 100px;
@@ -1249,6 +1420,15 @@ textarea:focus {
         font-size: 0.8rem;
     }
 
+    #milestones-view #milestone-header-container .distance-header .distance-label{
+        font-size: 1.8rem !important;
+    }
+
+    #milestone-header-container h2 {
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+    }
+
 }
 
 /* Small Phones (up to 480px) */
@@ -1274,175 +1454,4 @@ textarea:focus {
     #polls-view .box.available {
         width: 85%; /* Slightly wider on very small screens to maintain readability */
     }
-}
-
-.thought-body {
-    flex: 1;
-    overflow: hidden; /* Hide overflow for short texts */
-    position: relative;
-    text-align: left;
-}
-
-.thought-body.expanded {
-    overflow-y: auto; /* Enable scrolling only when "Կարդալ" is clicked */
-}
-
-.thought-card {
-    position: relative;
-    overflow: hidden; /* Necessary to hide the tray when closed */
-}
-
-.thought-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: auto;
-    padding-top: 10px;
-}
-
-.reply-count-btn {
-    background: rgba(107, 63, 105, 0.1);
-    border: none;
-    padding: 5px 12px;
-    border-radius: 20px;
-    color: var(--terracotta);
-    font-size: 0.7rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.reply-count-btn:hover {
-    background: var(--terracotta);
-    color: white;
-}
-
-/* The Sliding Tray */
-.reply-tray {
-    position: absolute;
-    bottom: -100%; /* Hidden by default */
-    left: 0;
-    width: 100%;
-    height: 85%;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-top: 1px solid var(--border-soft);
-    z-index: 20;
-    transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    padding: 15px;
-}
-
-.reply-tray.active {
-    bottom: 0;
-}
-
-.tray-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #eee;
-}
-
-.tray-title {
-    font-size: 0.75rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    color: var(--deep-navy);
-}
-
-.reply-list {
-    flex: 1;
-    overflow-y: auto;
-    margin-bottom: 10px;
-}
-
-.chat-bubble {
-    background: #f8f9fa;
-    padding: 8px 12px;
-    border-radius: 12px;
-    margin-bottom: 8px;
-    border-left: 3px solid var(--terracotta);
-}
-
-.chat-name {
-    font-size: 0.65rem;
-    font-weight: 900;
-    color: var(--terracotta);
-    display: block;
-    margin-bottom: 2px;
-}
-
-.chat-msg {
-    font-size: 0.8rem;
-    color: var(--deep-navy);
-}
-
-.reply-input-bar {
-    display: flex;
-    gap: 8px;
-}
-
-.reply-input-bar input {
-    flex: 1;
-    padding: 8px 12px;
-    border-radius: 20px;
-    border: 1px solid #ddd;
-    font-size: 0.8rem;
-    text-align: left;
-}
-
-.send-icon-btn {
-    background: var(--deep-navy);
-    color: white;
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-weight: 900;
-}
-
-.calendar-cell.today-highlight {
-    background: rgba(255, 187, 92, 0.1); /* Soft dusty purple tint */
-    border: 2px solid rgb(255, 144, 54) !important;
-    color: rgb(66, 55, 46);
-    box-shadow: 0 0 15px rgba(107, 63, 105, 0.2);
-}
-
-/* Optional: Add a "Today" label via CSS */
-.calendar-cell.today-highlight::before {
-    content: "ԱՅՍՕՐ";
-    position: absolute;
-    top: 10px;
-    font-size: 0.5rem;
-    letter-spacing: 0.5px;
-    font-weight: 900;
-}
-
-.calendar-cell.meeting-day-highlight {
-    background: rgba(107, 63, 105, 0.1) !important; /* Soft terracotta tint */
-    border: 2px solid var(--terracotta) !important;
-    color: var(--deep-navy);
-    box-shadow: 0 0 15px rgba(107, 63, 105, 0.2);
-}
-
-/* Armenian Label for the Meeting Day */
-.calendar-cell.meeting-day-highlight::before {
-    content: "ՄԵՐ ՕՐԸ"; /* "Our Day" in Armenian */
-    position: absolute;
-    top: 10px;
-    font-size: 0.5rem;
-    letter-spacing: 0.5px;
-    font-weight: 900;
-    color: var(--terracotta);
-}
-
-/* Remove the old ::after content if it's still there */
-.calendar-cell.meeting-day-highlight::after {
-    display: none;
 }

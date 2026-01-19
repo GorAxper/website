@@ -255,7 +255,7 @@ function updateMilestoneHeader() {
 
     headerContainer.innerHTML = `
         <div class="distance-header">
-            <p class="distance-label" style="color: #051937; opacity: 1; font-size: 2.8rem; font-family: 'JetBrains Mono', monospace">${diffDays} ՕՐ</p>
+            <p class="distance-label" style="color: #051937; opacity: 1; font-size: 2.5rem; font-family: 'JetBrains Mono', monospace">${diffDays} Օր</p>
             <h2 style="color: var(--terracotta); font-family: 'Poppins', sans-serif; font-size: 1.2rem; font-weight: 550; letter-spacing: 2px;">Այն պահից, երբ հանդիպեցի քեզ:</h2>
             <div class="distance-line">
                 <span style="color: black;">⧗</span>
