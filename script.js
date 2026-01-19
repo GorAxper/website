@@ -769,7 +769,7 @@ function runWelcomeQuote() {
     const quoteContainer = document.getElementById('welcome-quote');
     if (!quoteContainer) return;
 
-    const text = "This is a space where your words are always welcome. Speak, whisper, or simply leave a thought - I am here, listening, always.";
+    const text = "A space where your words are always welcome. Speak, whisper, or simply leave a thought - I am here, listening, always.";
     
     // Split into words
     const words = text.split(" ");
