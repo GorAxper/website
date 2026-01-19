@@ -528,7 +528,7 @@ function renderThoughts() {
     if (!grid) return;
     grid.innerHTML = "";
 
-    // 1. Plus Card (Same height as thought cards)
+    // 1. Plus Card
     const plusCard = document.createElement('div');
     plusCard.className = "box available";
     plusCard.style = "cursor: pointer; border: 2px dashed var(--terracotta); font-size: 3rem; color: var(--terracotta); display: flex; justify-content: center; align-items: center; height: 320px;";
@@ -536,29 +536,58 @@ function renderThoughts() {
     plusCard.onclick = openThoughtCreator;
     grid.appendChild(plusCard);
 
-    // 2. Render existing thoughts
+    // 2. Render thoughts
     THOUGHTS.forEach((t, i) => {
         const card = document.createElement('div');
         card.className = "box thought-card available";
-        card.style.animationDelay = `${i * 0.1}s`;
         
-        // Use a character threshold for the Read More button
-        const needsReadMore = t.text.length > 140; 
-        
+        const replies = t.replies ? Object.values(t.replies) : [];
+        const replyCount = replies.length;
+
+        // Condition: Only show "Կարդալ" if text is longer than 155 characters
+        const needsReadMore = t.text.length > 155;
+
         card.innerHTML = `
             <span class="delete-btn" onclick="confirmDelete('thoughts/${t.id}')">&times;</span>
             <div class="thought-header">
                 <div class="thought-author">${t.author}</div>
                 <div class="thought-date">${t.date}</div>
             </div>
-            <div class="thought-body" id="thought-body-${i}">
+            <div class="thought-body" id="thought-scroll-${t.id}">
                 <p class="thought-text">"${t.text}"</p>
             </div>
-            ${needsReadMore ? `<button class="read-more-btn" onclick="toggleThought(${i}, this)">Կարդալ ավելին</button>` : ''}
+            
+            <div class="thought-footer">
+                ${needsReadMore ? `<button class="read-more-btn" onclick="toggleThoughtScroll('${t.id}', this)">Կարդալ</button>` : '<div></div>'}
+                
+                <button class="reply-count-btn" onclick="toggleReplyTray('${t.id}', true)">
+                    💬 ${replyCount > 0 ? replyCount : 'Պատասխանել'}
+                </button>
+            </div>
+
+            <div class="reply-tray" id="tray-${t.id}">
+                <div class="tray-header">
+                    <span class="tray-title">Պատասխաններ</span>
+                    <span style="cursor:pointer; font-size:1.2rem;" onclick="toggleReplyTray('${t.id}', false)">&times;</span>
+                </div>
+                <div class="reply-list">
+                    ${replies.length > 0 ? replies.map(r => `
+                        <div class="chat-bubble">
+                            <span class="chat-name">${r.author}</span>
+                            <span class="chat-msg">${r.text}</span>
+                        </div>
+                    `).join('') : '<p style="font-size:0.75rem; opacity:0.5; text-align:center; margin-top:20px;">Դեռ պատասխաններ չկան...</p>'}
+                </div>
+                <div class="reply-input-bar">
+                    <input type="text" id="input-${t.id}" placeholder="Անուն: Պատասխան..." onkeydown="if(event.key==='Enter') submitThoughtReply('${t.id}')">
+                    <button class="send-icon-btn" onclick="submitThoughtReply('${t.id}')">></button>
+                </div>
+            </div>
         `;
         grid.appendChild(card);
     });
 }
+
 
 function toggleThought(index, btn) {
     const body = document.getElementById(`thought-body-${index}`);
@@ -724,6 +753,42 @@ function runWelcomeQuote() {
         charIndex++;
     });
 }
+
+function toggleReplyTray(id, show) {
+    const tray = document.getElementById(`tray-${id}`);
+    if (show) tray.classList.add('active');
+    else tray.classList.remove('active');
+}
+
+function toggleThoughtScroll(id, btn) {
+    const body = document.getElementById(`thought-scroll-${id}`);
+    const isExpanded = body.classList.toggle('expanded');
+    btn.innerText = isExpanded ? "Փակել" : "Կարդալ";
+}
+
+function submitThoughtReply(thoughtId) {
+    const input = document.getElementById(`input-${thoughtId}`);
+    const val = input.value.trim();
+    
+    if (!val.includes(':')) {
+        alert("Խնդրում ենք գրել 'Անուն: Պատասխան' ձևաչափով");
+        return;
+    }
+
+    const [author, ...msgArr] = val.split(':');
+    const msg = msgArr.join(':').trim();
+
+    if (author && msg) {
+        database.ref(`debate_cards/${ROOM_ID}/thoughts/${thoughtId}/replies`).push({
+            author: author.trim(),
+            text: msg,
+            timestamp: Date.now()
+        });
+        input.value = "";
+    }
+}
+
+
 // 8. PARTICLE ENGINE
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas.getContext('2d');
@@ -736,7 +801,7 @@ function initParticles() {
 function animateParticles() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
     particles.forEach(p => {
-        ctx.globalAlpha = p.opacity; ctx.fillStyle = '#f18d5e'; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = p.opacity; ctx.fillStyle = '#e8b8a2'; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
         p.x += p.dx; p.y += p.dy;
         if (p.x<0) p.x=canvas.width; if (p.x>canvas.width) p.x=0; if (p.y<0) p.y=canvas.height; if (p.y>canvas.height) p.y=0;
     });
