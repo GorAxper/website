@@ -1406,3 +1406,43 @@ textarea:focus {
     cursor: pointer;
     font-weight: 900;
 }
+
+.calendar-cell.today-highlight {
+    background: rgba(255, 187, 92, 0.1); /* Soft dusty purple tint */
+    border: 2px solid rgb(255, 144, 54) !important;
+    color: rgb(66, 55, 46);
+    box-shadow: 0 0 15px rgba(107, 63, 105, 0.2);
+}
+
+/* Optional: Add a "Today" label via CSS */
+.calendar-cell.today-highlight::before {
+    content: "ԱՅՍՕՐ";
+    position: absolute;
+    top: 10px;
+    font-size: 0.5rem;
+    letter-spacing: 0.5px;
+    font-weight: 900;
+}
+
+.calendar-cell.meeting-day-highlight {
+    background: rgba(107, 63, 105, 0.1) !important; /* Soft terracotta tint */
+    border: 2px solid var(--terracotta) !important;
+    color: var(--deep-navy);
+    box-shadow: 0 0 15px rgba(107, 63, 105, 0.2);
+}
+
+/* Armenian Label for the Meeting Day */
+.calendar-cell.meeting-day-highlight::before {
+    content: "ՄԵՐ ՕՐԸ"; /* "Our Day" in Armenian */
+    position: absolute;
+    top: 10px;
+    font-size: 0.5rem;
+    letter-spacing: 0.5px;
+    font-weight: 900;
+    color: var(--terracotta);
+}
+
+/* Remove the old ::after content if it's still there */
+.calendar-cell.meeting-day-highlight::after {
+    display: none;
+}
