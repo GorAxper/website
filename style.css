@@ -1097,8 +1097,9 @@ textarea:focus {
 
     /* Login Screen */
     .login-card {
-        padding: 2rem 1.5rem;
+        padding: 1.5rem 1.5rem;
         border-radius: 20px;
+        width: 70%;
     }
 
     .login-card h1 {
@@ -1107,6 +1108,10 @@ textarea:focus {
 
     .welcome-quote {
         font-size: 0.75rem;
+    }
+
+    .input-group {
+        gap: 20px;
     }
 }
 
