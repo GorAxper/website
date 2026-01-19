@@ -1233,6 +1233,8 @@ textarea:focus {
 
     .box.available {
         min-height: 280px;
+        width: 70%;
+        margin: 0 auto;
     }
 
     /* Adjust the font size of the questions for the smaller cards */
@@ -1246,6 +1248,7 @@ textarea:focus {
         padding: 10px;
         font-size: 0.8rem;
     }
+
 }
 
 /* Small Phones (up to 480px) */
