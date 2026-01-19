@@ -152,8 +152,17 @@ function showView(view) {
 
     if (view === 'polls') renderPolls();
     if (view === 'milestones') {
-        updateMilestoneHeader(); // <--- Add this line
+        updateMilestoneHeader();
+        // Refresh the header every minute to update the time
+        if (window.milestoneInterval) clearInterval(window.milestoneInterval);
+        window.milestoneInterval = setInterval(updateMilestoneHeader, 60000); 
         generateGrid();
+    } else {
+        // Stop the timer if we leave the milestones view to save battery/performance
+        if (window.milestoneInterval) {
+            clearInterval(window.milestoneInterval);
+            window.milestoneInterval = null;
+        }
     }
     if (view === 'home') updateWeatherAndClocks();
     if (view === 'thoughts') renderThoughts();
@@ -245,17 +254,23 @@ function updateMilestoneHeader() {
     const headerContainer = document.getElementById('milestone-header-container');
     if (!headerContainer) return;
 
-    // Calculation: July 18, 2025 (Month is 0-indexed, so July is 6)
-    const startDate = new Date(2025, 6, 18); 
+    // Start Date: July 18, 2025, 5:40 PM (17:40)
+    // Month is 0-indexed, so July is 6
+    const startDate = new Date(2025, 6, 18, 17, 40); 
     const today = new Date();
     
-    // Calculate difference in days
     const diffTime = Math.abs(today - startDate);
+    
+    // Calculate Days, Hours, and Minutes
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
 
     headerContainer.innerHTML = `
         <div class="distance-header">
-            <p class="distance-label" style="color: #051937; opacity: 1; font-size: 2.5rem; font-family: 'JetBrains Mono', monospace">${diffDays} Օր</p>
+            <p class="distance-label" style="color: #051937; opacity: 1; font-size: 1.9rem; font-weight: 600; margin-bottom: 5px;">
+                ${diffDays} Օր, ${diffHours} Ժամ, ${diffMinutes} Րոպե
+            </p>
             <h2 style="color: var(--terracotta); font-family: 'Poppins', sans-serif; font-size: 1.2rem; font-weight: 550; letter-spacing: 2px;">Այն պահից, երբ հանդիպեցի քեզ:</h2>
             <div class="distance-line">
                 <span style="color: black;">⧗</span>
