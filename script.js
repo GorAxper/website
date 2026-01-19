@@ -271,7 +271,7 @@ function updateMilestoneHeader() {
             <p class="distance-label" style="color: #051937; opacity: 1; font-size: 1.9rem; font-weight: 600; margin-bottom: 5px;">
                 ${diffDays} Օր, ${diffHours} Ժամ, ${diffMinutes} Րոպե
             </p>
-            <h2 style="color: var(--terracotta); font-family: 'Poppins', sans-serif; font-size: 1.2rem; font-weight: 550; letter-spacing: 2px;">Այն պահից, երբ հանդիպեցի քեզ:</h2>
+            <h2 style="color: var(--terracotta); font-family: 'Poppins', sans-serif; font-size: 1.2rem; font-weight: 550; letter-spacing: 1.5px;">Այն պահից, երբ հանդիպեցի քեզ:</h2>
             <div class="distance-line">
                 <span style="color: black;">⧗</span>
             </div>
