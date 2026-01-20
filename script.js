@@ -24,7 +24,7 @@ const PLAYLIST = [
 const GOR_POLLS = [];
 
 const GIFT_DAYS = [
-    "2026-02-02", "2026-03-19", "2026-04-27", "2026-05-20" 
+    "2026-02-02", "2026-03-19", "2026-04-27", "2026-05-20", "2026-07-18" 
 ];
 
 // --- FIREBASE INITIALIZATION ---
@@ -352,21 +352,38 @@ function generateGrid() {
         const dateISO = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         const isGift = GIFT_DAYS.includes(dateISO);
         
-        // Check if this cell is "Today" in Armenia
+        // NEW: Check for the Special Anniversary Gift
+        const isSpecialGift = (dateISO === "2026-07-18");
+
         const isToday = (d === armToday && month === armMonth && year === armYear);
-        
-        // --- ADD THE LINE BELOW ---
         const isMeetingDay = (d === 18 && month === 6 && year === 2025); 
-        
+
+        const cellDate = new Date(year, month, d);
+        const todayDate = new Date(armYear, armMonth, armToday);
+        const isDateReached = cellDate <= todayDate;
+
         const cell = document.createElement('div');
-        
-        // --- UPDATE THIS CLASSNAME LINE ---
-        cell.className = `calendar-cell ${isGift ? 'available gift-day' : 'regular-day'} ${isToday ? 'today-highlight' : ''} ${isMeetingDay ? 'meeting-day-highlight' : ''}`;
-        
-        cell.innerHTML = `<span>${d}</span>${isGift ? '<div class="gift-icon">🎁</div>' : ''}`;
+        cell.className = `calendar-cell ${isToday ? 'today-highlight' : ''} ${isMeetingDay ? 'meeting-day-highlight' : ''}`;
         
         if (isGift) {
-            cell.onclick = () => openModal(`Gift for ${monthName} ${d}`);
+            // Apply 'special-gift' class if it's July 18
+            cell.classList.add('gift-day');
+            if (isSpecialGift) cell.classList.add('special-gift');
+
+            // Use a bigger icon for the special day
+            const icon = isSpecialGift ? "🎁" : "🎁";
+            cell.innerHTML = `<span>${d}</span><div class="gift-icon">${icon}</div>`;
+
+            if (isDateReached) {
+                cell.classList.add('available');
+                cell.onclick = () => openModal(isSpecialGift ? "Our Special Anniversary Gift 💖" : `Gift for ${monthName} ${d}`);
+            } else {
+                cell.classList.add('locked');
+                cell.style.opacity = "0.6";
+            }
+        } else {
+            cell.classList.add('regular-day');
+            cell.innerHTML = `<span>${d}</span>`;
         }
         
         calGrid.appendChild(cell);

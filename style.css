@@ -1455,3 +1455,32 @@ textarea:focus {
         width: 85%; /* Slightly wider on very small screens to maintain readability */
     }
 }
+
+.calendar-cell.gift-day.locked {
+    cursor: not-allowed;
+    filter: grayscale(1); /* Optional: makes the gift icon look "inactive" */
+}
+
+.calendar-cell.special-gift {
+    background: linear-gradient(135deg, #fff, #fff0f3) !important;
+    border: 3px solid #ff4d6d !important; /* Brighter pink/red border */
+    transform: scale(1.05); /* Slightly larger than other cells */
+    z-index: 5;
+    box-shadow: 0 0 20px rgba(255, 77, 109, 0.3) !important;
+}
+
+.calendar-cell.special-gift .gift-icon {
+    font-size: 1.8rem; /* Bigger Emoji */
+    filter: drop-shadow(0 0 5px rgba(255, 77, 109, 0.5));
+    animation: special-bounce 1.5s infinite ease-in-out;
+}
+
+@keyframes special-bounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-8px) scale(1.2); } /* Higher bounce & growth */
+}
+
+/* Ensure the lock grayscale doesn't hide the specialness too much if it's locked */
+.calendar-cell.special-gift.locked {
+    filter: grayscale(0.5) brightness(0.9);
+}
