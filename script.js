@@ -42,7 +42,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const analytics = firebase.analytics();
-const ROOM_ID = ACCESS_PASSWORD; 
+let ROOM_ID = ACCESS_PASSWORD;
 
 let USER_VOTES = {};
 let ANI_POLLS = [];
@@ -68,6 +68,7 @@ function trackEvent(action, category, label) {
 function checkPassword() {
     const input = document.getElementById('password-input').value;
     if (input === ACCESS_PASSWORD) {
+        ROOM_ID = input;
         // Generate a unique ID for this specific browser/device if it doesn't exist
         let deviceID = localStorage.getItem('journey_user_id');
         if (!deviceID) {
@@ -109,7 +110,25 @@ function checkPassword() {
         setTimeout(() => error.innerText = "", 3000);
     }
 }
+function renderMusicSuggestions(suggestions) {
+    const container = document.getElementById('music-suggestions-list'); // Ensure this ID exists in your HTML
+    if (!container) return;
 
+    if (suggestions.length === 0) {
+        container.innerHTML = "<p style='opacity:0.5;'>Դեռևս առաջարկներ չկան:</p>";
+        return;
+    }
+
+    container.innerHTML = suggestions.map(s => `
+        <div class="glass-panel" style="padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong style="color: var(--terracotta);">${s.suggestion}</strong>
+                <div style="font-size: 0.7rem; opacity: 0.5;">${s.date}</div>
+            </div>
+            <span class="delete-btn" onclick="confirmDelete('music_suggestions/${s.id}')" style="position:static;">&times;</span>
+        </div>
+    `).join('');
+}
 
 function startRealtimeSync() {
     const roomRef = database.ref(`debate_cards/${ROOM_ID}`);
@@ -125,6 +144,8 @@ function startRealtimeSync() {
             GOR_POLLS_DISPLAY = [...GOR_POLLS, ...gorDynamic]; 
             
             THOUGHTS = data.thoughts ? Object.entries(data.thoughts).map(([id, val]) => ({...val, id})).reverse() : [];
+            const suggestions = data.music_suggestions ? Object.entries(data.music_suggestions).map(([id, val]) => ({...val, id})).reverse() : [];
+            renderMusicSuggestions(suggestions);
         } else {
             USER_VOTES = {};
             ANI_POLLS = [];
