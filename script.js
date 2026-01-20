@@ -268,7 +268,7 @@ function updateMilestoneHeader() {
 
     headerContainer.innerHTML = `
         <div class="distance-header">
-            <p class="distance-label" style="color: #051937; opacity: 1; font-size: 1.8rem; font-weight: 600; margin-bottom: 5px;">
+            <p class="distance-label" style="color: #051937; opacity: 1; font-size: 1.7rem; font-weight: 600; margin-bottom: 5px;">
                 ${diffDays} Օր, ${diffHours} Ժամ, ${diffMinutes} Րոպե
             </p>
             <h2 style="color: var(--terracotta); font-family: 'Poppins', sans-serif; font-size: 1.2rem; font-weight: 550; letter-spacing: 1.5px;">Այն պահից, երբ հանդիպեցի քեզ:</h2>
@@ -413,7 +413,7 @@ function createPollCard(p, id, delay) {
     const existingVote = USER_VOTES[id];
     let pollHTML = ``;
 
-    // Show delete button for any dynamic poll (Ani or Gor)
+    // 1. Show delete button for any dynamic poll (Ani or Gor)
     if (id.startsWith('ani_')) {
         pollHTML += `<span class="delete-btn" onclick="confirmDelete('custom_polls/${p.id}')">&times;</span>`;
     } else if (id.startsWith('gor_dyn_')) {
@@ -422,7 +422,7 @@ function createPollCard(p, id, delay) {
 
     pollHTML += `<div class="poll-question">${p.q}</div>`;
     
-    // 3. Add the logic for answers
+    // 2. Logic for answers/inputs
     if (existingVote) {
         pollHTML += `
             <div style="width: 100%;">
@@ -449,6 +449,14 @@ function createPollCard(p, id, delay) {
             </div>
         `;
     }
+
+    // 3. ADDED: Recipient Label
+    const addressedTo = id.startsWith('ani_') ? 'Գոռին' : 'Անիին';
+    pollHTML += `
+        <div style="font-size: 0.7rem; color: #888; margin-top: 15px; width: 100%; text-align: center; opacity: 0.7;">
+            Հարցը ուղղված է՝ <span style="font-weight: 600;">${addressedTo}</span>
+        </div>
+    `;
     
     card.innerHTML = pollHTML;
     return card;
