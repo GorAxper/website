@@ -808,7 +808,7 @@ function submitMusicSuggestion() {
         modalBody.innerHTML = `
             <div style="padding: 20px;">
                 <h2 class="header-gradient" style="margin-bottom: 15px;">Ուղարկված է!</h2>
-                <p style="margin-bottom: 25px;">"${val}"-ը ավելացվել է գաղտնի ցանկում։ 🎧</p>
+                <p style="margin-bottom: 25px;">"${val}"-ը ավելացվել է առաջարկների ցանկում։ 🎧</p>
                 <button class="nav-btn active" onclick="closeModal()" style="width: 100%; padding: 15px;">Փակել</button>
             </div>
         `;
