@@ -469,11 +469,14 @@ function openPollCreator(target) {
     const modalBody = document.getElementById('modal-body');
     const modal = document.getElementById('content-modal');
     
+    // Determine the recipient based on whose section the "+" was clicked in
+    const recipient = target === 'gor' ? 'Անիին' : 'Գոռին';
+
     if (modal && modalBody) {
         modalBody.innerHTML = `
             <div style="padding: 10px; text-align: left;">
                 <h2 class="header-gradient" style="margin-bottom: 20px; text-align: center;">
-                    Նոր հարց
+                    Նոր հարց (${recipient})
                 </h2>
                 
                 <div style="margin-bottom: 20px;">
