@@ -1,7 +1,7 @@
 /* --- THE JOURNEY: LOGIC ENGINE --- */
 
 // 1. CONFIGURATION
-const ACCESS_PASSWORD = "2026";
+const ACCESS_PASSWORD = "180725";
 const VANCOUVER_COORDS = { lat: 49.2827, lon: -123.1207 };
 const GORIS_COORDS = { lat: 39.5074, lon: 46.3317 };
 
