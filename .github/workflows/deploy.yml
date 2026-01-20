@@ -8,10 +8,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Replace Password Placeholder
-        run: sed -i "s/___SITE_PASSWORD___/${{ secrets.MY_SITE_PASSWORD }}/g" script.js
+        run: |
+          find . -type f \( -name "*.js" -o -name "*.html" \) -exec sed -i "s/___SITE_PASSWORD___/${{ secrets.MY_SITE_PASSWORD }}/g" {} +
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: .
+          folder: . # The folder where your files are
           branch: gh-pages
-          token: ${{ secrets.GITHUB_TOKEN }}
