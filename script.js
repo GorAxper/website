@@ -94,15 +94,15 @@ function checkPassword() {
         const musicContainer = document.getElementById('music-container');
         if (musicContainer) {
             musicContainer.classList.remove('hidden');
-            musicContainer.classList.remove('folded');
+            musicContainer.classList.add('folded'); // Ensure it starts CLOSED
             const foldIcon = document.getElementById('fold-icon');
             if (foldIcon) foldIcon.innerText = "🎶";
         }
 
         startRealtimeSync();
         initHomeView();
-        setupMusic();
-        togglePlay(); 
+        setupMusic(); // This will now handle the fade-in
+        togglePlay();
     } else {
         const error = document.getElementById('error-msg');
         error.innerText = "Սխալ գաղտնաբառ:";
@@ -552,10 +552,30 @@ function resetVote(id) { database.ref(`debate_cards/${ROOM_ID}/votes/${id}`).rem
 let trackIdx = 0;
 const audio = document.getElementById('audio-element');
 function setupMusic() {
-    audio.volume = 0.5;
+    const targetVolume = 0.5;
+    audio.volume = 0; // Start at zero
     updateTrackInfo();
+    
     audio.onended = () => changeTrack(1);
-    document.getElementById('volume-control').addEventListener('input', (e) => { audio.volume = e.target.value; });
+    
+    // Manual volume slider listener
+    document.getElementById('volume-control').addEventListener('input', (e) => { 
+        audio.volume = e.target.value; 
+    });
+
+    // Fade-in Logic: 0 to 0.5 over 2000ms
+    // Increase volume by 0.01 every 40ms (50 steps total)
+    audio.onplay = () => {
+        let fadeInterval = setInterval(() => {
+            if (audio.volume < targetVolume) {
+                audio.volume = Math.min(targetVolume, audio.volume + 0.01);
+                // Sync the visual slider with the fading volume
+                document.getElementById('volume-control').value = audio.volume;
+            } else {
+                clearInterval(fadeInterval);
+            }
+        }, 40);
+    };
 }
 function updateTrackInfo() {
     document.getElementById('current-track-name').innerText = PLAYLIST[trackIdx].title;
