@@ -95,7 +95,7 @@ function checkPassword() {
         const musicContainer = document.getElementById('music-container');
         if (musicContainer) {
             musicContainer.classList.remove('hidden');
-            musicContainer.classList.add('folded'); // Ensure it starts CLOSED
+            musicContainer.classList.remove('folded');
             const foldIcon = document.getElementById('fold-icon');
             if (foldIcon) foldIcon.innerText = "🎶";
         }
