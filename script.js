@@ -24,7 +24,7 @@ const PLAYLIST = [
 const GOR_POLLS = [];
 
 const GIFT_DAYS = [
-    "2026-02-02", "2026-03-19", "2026-04-27", "2026-05-20", "2026-07-18" 
+    "2026-03-19", "2026-07-18" 
 ];
 
 // --- FIREBASE INITIALIZATION ---
